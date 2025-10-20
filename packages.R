@@ -16,3 +16,5 @@ install_and_load <- function(pkg) {
 
 # Appliquer la fonction à chaque package
 invisible(sapply(packages, install_and_load))
+
+rm(packages, install_and_load)

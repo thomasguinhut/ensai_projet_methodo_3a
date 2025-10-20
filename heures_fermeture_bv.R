@@ -16,7 +16,7 @@ regions <- data.frame(
   NOM_REG = c("Guadeloupe", "Martinique", "Guyane", "La Réunion", "Mayotte",
               "Île-de-France", "Centre-Val de Loire", "Bourgogne-Franche-Comté", "Normandie",
               "Hauts-de-France", "Grand Est", "Pays de la Loire", "Bretagne",
-              "Île-de-France", "Occitanie", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur", "Corse"),
+              "Nouvelle-Aquitaine", "Occitanie", "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur", "Corse"),
   stringsAsFactors = FALSE
 )
 
@@ -28,6 +28,18 @@ bdd_1 <- bdd %>%
   rename(NOM_REGION = NOM_REG) %>%
   dplyr::select(-REG)
 
+################################################################################
+######################## Liste des communes fermant à 20h ######################
+################################################################################
+
+paca20 <- c(
+  "13055",
+  "06004", "06006", "06007", "06011"
+)
+na20 <- c(
+  "33063"
+)
+
 # Ajout des variables pour les horaires et dates d'ouverture/fermeture des bureaux de vote (2 tours)
 bdd_2 <- bdd_1 %>%
   mutate(
@@ -36,8 +48,9 @@ bdd_2 <- bdd_1 %>%
       TRUE ~ "08:00"  # Heure par défaut pour la métropole
     ),
     heure_fermeture_bv = case_when(
-      DEP %in% c("971", "972", "973", "974", "976") ~ "17:00",  # Fermeture anticipée pour les DROM
-      TRUE ~ "18:00"  # Heure par défaut pour la métropole
+      NOM_REGION == "Nouvelle-Aquitaine" & !(COM %in% na20) ~ "19:00",
+      NOM_REGION == "Provence-Alpes-Côte d'Azur" & !(COM %in% paca20) ~ "19:00",
+      COM %in% c(na20, paca20) ~ "20:00"
     ),
     date_ouverture_tour1 = as.Date(case_when(
       DEP %in% c("971", "972", "973", "974", "976") ~ "2022-04-09",  # 1er tour (samedi pour les DROM)
@@ -56,3 +69,15 @@ bdd_2 <- bdd_1 %>%
       TRUE ~ "2022-04-24"  # 2nd tour (dimanche pour la métropole)
     ))
   )
+
+test <- bdd_1 %>% 
+  group_by(NOM_REGION, DEP) %>% 
+  summarise(n()) %>% 
+  dplyr::select(NOM_REGION, DEP) %>% 
+  arrange(NOM_REGION)
+
+write.csv(test, "test.csv", row.names = FALSE)
+
+sum(is.na(bdd_2$heure_fermeture_bv))
+
+    

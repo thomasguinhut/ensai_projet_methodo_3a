@@ -3,7 +3,7 @@ bdd <-
     FUN = readr::read_delim,
     # Mettre les options de FUN ici
     delim = ",",
-    object = "projet_methodo_3a/communes_2022.csv",
+    object = "diffusion/projet_methodo_3a/communes_2022.csv",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )

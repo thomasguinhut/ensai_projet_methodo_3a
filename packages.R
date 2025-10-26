@@ -1,6 +1,7 @@
 # Liste des packages nécessaires
 packages <- c(
-  "dplyr"
+  "dplyr",
+  "aws.s3"
 )
 
 # Fonction corrigée pour installer et charger les packages

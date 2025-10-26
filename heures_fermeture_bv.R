@@ -8,7 +8,7 @@ bdd <-
     opts = list("region" = "")
   )
 
-str(bdd)
+glimpse(bdd)
 
 # Dictionnaire pour convertir les codes REG en noms de régions (y compris DROM)
 regions <- data.frame(
@@ -27,6 +27,8 @@ bdd_1 <- bdd %>%
   left_join(regions, by = "REG") %>%
   rename(NOM_REGION = NOM_REG) %>%
   dplyr::select(-REG)
+
+glimpse(bdd_1)
 
 ################################################################################
 ######################## Liste des communes fermant à 20h ######################
@@ -69,14 +71,6 @@ bdd_2 <- bdd_1 %>%
       TRUE ~ "2022-04-24"  # 2nd tour (dimanche pour la métropole)
     ))
   )
-
-test <- bdd_1 %>% 
-  group_by(NOM_REGION, DEP) %>% 
-  summarise(n()) %>% 
-  dplyr::select(NOM_REGION, DEP) %>% 
-  arrange(NOM_REGION)
-
-write.csv(test, "test.csv", row.names = FALSE)
 
 sum(is.na(bdd_2$heure_fermeture_bv))
 

@@ -2,25 +2,63 @@
 ############################ Importation des données ###########################
 ################################################################################
 
-resultats_2022_t1 <-
-  aws.s3::s3read_using(
+resultats_2022_t1_1 <-
+  data.frame(aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
     object = "projet_methodo_3a/resultats_2022_t1_bv.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
-  )
+  ))
 
-glimpse(resultats_2022_t1)
+glimpse(resultats_2022_t1_1)
 
 resultats_2022_t2_1 <-
-  aws.s3::s3read_using(
+  data.frame(aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
     object = "projet_methodo_3a/resultats_2022_t2_bv.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
-  )
+  ))
 
 glimpse(resultats_2022_t2_1)
+
+
+################################################################################
+############################ Nettoyage des bases ###############################
+################################################################################
+
+resultats_2022_t1_2 <- resultats_2022_t1_1 %>% 
+  dplyr::select(`Code du département`, `Code de la commune`, `Code du b.vote`,
+                Inscrits, Votants, Exprimés, Voix, ...33, ...40, ...47, ...54,
+                ...61, ...68, ...75, ...82, ...89, ...96, ...103,
+                `Libellé de la commune`) %>% 
+  mutate(COM = paste0(`Code du département`, `Code de la commune`),
+         ID = paste0(COM, "_", `Code du b.vote`),
+         Inscrits = as.numeric(Inscrits)) %>% 
+  rename(DEP = `Code du département`,
+         BV = `Code du b.vote`,
+         INSCRITS_T1 = Inscrits,
+         VOTANTS_T1 = Votants,
+         EXPRIMES_T1 = Exprimés,
+         ARTHAUD_T1 = Voix,
+         ROUSSEL_T1 = ...33,
+         MACRON_T1 = ...40,
+         LASSALLE_T1 = ...47,
+         LEPEN_T1 = ...54,
+         ZEMMOUR_T1 = ...61,
+         MELENCHON_T1 = ...68,
+         HIDALGO_T1 = ...75,
+         JADOT_T1 = ...82,
+         PECRESSE_T1 = ...89,
+         POUTOU_T1 = ...96,
+         DUPONTAIGNAN_T1 = ...103,
+         NOM_COM = `Libellé de la commune`) %>% 
+  dplyr::select(ID, DEP, COM, NOM_COM, BV, INSCRITS_T1, VOTANTS_T1, EXPRIMES_T1,
+                ARTHAUD_T1, ROUSSEL_T1, MACRON_T1, LASSALLE_T1, LEPEN_T1,
+                ZEMMOUR_T1, MELENCHON_T1, HIDALGO_T1, JADOT_T1, JADOT_T1,
+                PECRESSE_T1, POUTOU_T1, DUPONTAIGNAN_T1) %>% 
+  filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
+                      "ZX", "ZZ"))) # On retirer les Outre-mer
 
 resultats_2022_t2_2 <- resultats_2022_t2_1 %>% 
   dplyr::select(`Code du département`, `Code de la commune`, `Code du b.vote`,
@@ -30,22 +68,42 @@ resultats_2022_t2_2 <- resultats_2022_t2_1 %>%
          ID = paste0(COM, "_", `Code du b.vote`)) %>% 
   rename(DEP = `Code du département`,
          BV = `Code du b.vote`,
-         INSCRITS = Inscrits,
-         VOTANTS = Votants,
-         EXPRIMES = Exprimés,
-         MACRON = Voix,
-         LEPEN = ...33,
+         INSCRITS_T2 = Inscrits,
+         VOTANTS_T2 = Votants,
+         EXPRIMES_T2 = Exprimés,
+         MACRON_T2 = Voix,
+         LEPEN_T2 = ...33,
          NOM_COM = `Libellé de la commune`) %>% 
-  dplyr::select(ID, DEP, COM, NOM_COM, BV, INSCRITS, VOTANTS, EXPRIMES, MACRON,
-                LEPEN)
+  dplyr::select(ID, DEP, COM, NOM_COM, BV, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2,
+                MACRON_T2, LEPEN_T2) %>% 
+  filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
+                      "ZX", "ZZ"))) # On retirer les Outre-mer
 
-unique(resultats_2022_t2_2$COM)
+union(
+  setdiff(resultats_2022_t1_2$ID, resultats_2022_t2_2$ID),
+  setdiff(resultats_2022_t2_2$ID, resultats_2022_t1_2$ID)
+)
 
-unique(bdd$COM)
+# Aucun ID différent entre les deux jeux de données.
+# Les deux ensembles, étant de même taille, sont identiques.
+# On peut donc les fusionner sans risque de doublons ou de pertes.
 
-setdiff(unique(resultats_2022_t2_2$COM), unique(bdd$COM))
 
-# Il faut filter à la métropole
+################################################################################
+################################ Fusion ########################################
+################################################################################
+
+resultats_2022 <- resultats_2022_t1_2 %>%
+  dplyr::inner_join(
+    resultats_2022_t2_2 %>%
+      dplyr::select(ID, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2, MACRON_T2,
+                    LEPEN_T2),
+    by = "ID"
+  )
+
+str(resultats_2022_t1_2)
+str(resultats_2022_t2_2)
+
 
 # test <- resultats_2022_t2_2 %>% 
 #   left_join(bdd,  by = "COM")

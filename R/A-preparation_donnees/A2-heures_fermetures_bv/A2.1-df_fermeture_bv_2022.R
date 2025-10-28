@@ -155,6 +155,8 @@ bdd_2 <- bdd_1 %>%
 
 sum(is.na(bdd_2$FERMETURE_20h)) # Vérification de la fusion (doit renvoyer 0)
 
+setdiff(unique(resultats_2022_t2_2$COM), unique(bdd_2$COM))
+
 # aws.s3::s3write_using(
 #   bdd_2,
 #   FUN = readr::write_csv,

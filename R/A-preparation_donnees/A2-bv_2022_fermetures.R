@@ -2,17 +2,27 @@
 ############################ Importation des données ###########################
 ################################################################################
 
-bdd <-
+communes_2022_1 <-
   aws.s3::s3read_using(
     FUN = readr::read_delim,
-    # Mettre les options de FUN ici
     delim = ",",
-    object = "diffusion/projet_methodo_3a/communes_2022.csv",
+    object = "projet_methodo_3a/communes_2022.csv",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(bdd)
+glimpse(communes_2022_1)
+
+bv_2022_1 <-
+  aws.s3::s3read_using(
+    FUN = readRDS,
+    object = "projet_methodo_3a/bv_2022_1.rds",
+    bucket = "thomasguinhut",
+    opts = list("region" = "")
+  )
+
+glimpse(bv_2022_1)
+
 
 ################################################################################
 ################ Ajout noms départements et régions de métropole ###############
@@ -86,7 +96,7 @@ departements$NOM_DEP <- factor(departements$NOM_DEP)
 glimpse(departements)
 
 # On ajoute les noms à la base et on retire les Outre-mer
-bdd_1 <- bdd %>%
+communes_2022_2 <- communes_2022_1 %>%
   rename(NOM_COM = LIBELLE) %>% 
   filter(TYPECOM == "COM") %>%
   dplyr::select(COM, REG, DEP, NOM_COM) %>%
@@ -94,7 +104,7 @@ bdd_1 <- bdd %>%
   left_join(departements, by = "DEP") %>% 
   filter(!(REG %in%c("01", "02", "03", "04", "06")))
 
-glimpse(bdd_1)
+glimpse(communes_2022_2)
 
 ################################################################################
 ######################## Liste des communes fermant à 20h ######################
@@ -138,8 +148,8 @@ occ_20h <- c(
   "34172" # Montpallier
 )
 
-idf_20h <- bdd_1$COM[
-  grepl("^(75|78|91|92|93|94|95)", bdd_1$COM)
+idf_20h <- communes_2022_2$COM[
+  grepl("^(75|78|91|92|93|94|95)", communes_2022_2$COM)
 ] # Toutes les communes d'IdF sauf celles de Seine-et-Marne
 
 # On fusionne tout
@@ -148,20 +158,49 @@ communes_20h <- c(
 )
 
 # Ajout des horaires à la base
-bdd_2 <- bdd_1 %>%
+communes_2022_3 <- communes_2022_2 %>%
   mutate(
-    FERMETURE_20h = ifelse(COM %in% communes_20h, TRUE, FALSE)
+    FERMETURE_20H = ifelse(COM %in% communes_20h, TRUE, FALSE)
   )
 
-sum(is.na(bdd_2$FERMETURE_20h)) # Vérification de la fusion (doit renvoyer 0)
 
-setdiff(unique(resultats_2022_t2_2$COM), unique(bdd_2$COM))
+################################################################################
+################################ Fusion ########################################
+################################################################################
 
-# aws.s3::s3write_using(
-#   bdd_2,
-#   FUN = readr::write_csv,
-#   object = "diffusion/projet_methodo_3a/communes.csv",
-#   bucket = "thomasguinhut",
-#   opts = list("region" = "")
-# )
-    
+setdiff(bv_2022_1$COM, communes_2022_3$COM)
+setdiff(communes_2022_3$COM, bv_2022_1$COM)
+
+# Six communes, toutes situées dans la Meuse, n'ont pas de bureaux de vote.
+# On fusionne avec l'heure de fermeture des bureaux de vote en faisant donc un
+# left_join.
+
+glimpse(bv_2022_1)
+glimpse(communes_2022_3)
+
+# En plus de l'heure de fermeture, on ajoute le nom du département et de la
+# région
+bv_2022_2 <- bv_2022_1 %>%
+  left_join(
+    communes_2022_3 %>%
+      dplyr::select(COM, REG, NOM_REG, NOM_DEP, FERMETURE_20H),
+    by = "COM"
+  ) %>% 
+  dplyr::select(ID, REG, NOM_REG, DEP, NOM_DEP, COM, NOM_COM, BV, FERMETURE_20H)
+
+glimpse(bv_2022_2)
+
+
+################################################################################
+################################ Export ########################################
+################################################################################
+
+aws.s3::s3write_using(
+  bv_2022_2,
+  FUN = function(data, file) saveRDS(data, file = file),
+  object = "projet_methodo_3a/bv_2022_2.rds",
+  bucket = "thomasguinhut",
+  opts = list(region = "")
+)
+
+rm(list = ls())

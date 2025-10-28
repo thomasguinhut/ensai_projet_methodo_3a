@@ -1,0 +1,17 @@
+bv_2022 <-
+  aws.s3::s3read_using(
+    FUN = readRDS,
+    object = "projet_methodo_3a/bv_2022_3.rds",
+    bucket = "thomasguinhut",
+    opts = list("region" = "")
+  )
+
+aws.s3::s3write_using(
+  bv_2022,
+  FUN = function(data, file) saveRDS(data, file = file),
+  object = "projet_methodo_3a/bv_2022.rds",
+  bucket = "thomasguinhut",
+  opts = list(region = "")
+)
+
+rm(list = setdiff(ls(), "bv_2022"))

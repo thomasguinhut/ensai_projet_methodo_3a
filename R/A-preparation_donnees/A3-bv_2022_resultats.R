@@ -3,24 +3,34 @@
 ################################################################################
 
 resultats_2022_t1_1 <-
-  data.frame(aws.s3::s3read_using(
+  aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
     object = "projet_methodo_3a/resultats_2022_t1_bv.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
-  ))
+  )
 
 glimpse(resultats_2022_t1_1)
 
 resultats_2022_t2_1 <-
-  data.frame(aws.s3::s3read_using(
+  aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
     object = "projet_methodo_3a/resultats_2022_t2_bv.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
-  ))
+  )
 
 glimpse(resultats_2022_t2_1)
+
+bv_2022_2 <-
+  aws.s3::s3read_using(
+    FUN = readRDS,
+    object = "projet_methodo_3a/bv_2022_2.rds",
+    bucket = "thomasguinhut",
+    opts = list("region" = "")
+  )
+
+glimpse(bv_2022_2)
 
 
 ################################################################################
@@ -79,10 +89,8 @@ resultats_2022_t2_2 <- resultats_2022_t2_1 %>%
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
 
-union(
-  setdiff(resultats_2022_t1_2$ID, resultats_2022_t2_2$ID),
-  setdiff(resultats_2022_t2_2$ID, resultats_2022_t1_2$ID)
-)
+setdiff(resultats_2022_t1_2$ID, resultats_2022_t2_2$ID)
+setdiff(resultats_2022_t2_2$ID, resultats_2022_t1_2$ID)
 
 # Aucun ID différent entre les deux jeux de données.
 # Les deux ensembles, étant de même taille, sont identiques.
@@ -90,9 +98,10 @@ union(
 
 
 ################################################################################
-################################ Fusion ########################################
+################################ Fusions #######################################
 ################################################################################
 
+# On fusione les résultats des deux tours des présidentielles 2022
 resultats_2022 <- resultats_2022_t1_2 %>%
   dplyr::inner_join(
     resultats_2022_t2_2 %>%
@@ -101,9 +110,27 @@ resultats_2022 <- resultats_2022_t1_2 %>%
     by = "ID"
   )
 
-str(resultats_2022_t1_2)
-str(resultats_2022_t2_2)
+glimpse(resultats_2022)
+glimpse(bv_2022_2)
+
+# On fusionne avec la dernière version de la base des bureaux de vote.
+bv_2022_3 <- bv_2022_2 %>%
+  inner_join(resultats_2022 %>% 
+               dplyr::select(-c(DEP, COM, NOM_COM, BV)),  by = "ID")
+
+glimpse(bv_2022_3)
 
 
-# test <- resultats_2022_t2_2 %>% 
-#   left_join(bdd,  by = "COM")
+################################################################################
+################################ Export ########################################
+################################################################################
+
+aws.s3::s3write_using(
+  bv_2022_3,
+  FUN = function(data, file) saveRDS(data, file = file),
+  object = "projet_methodo_3a/bv_2022_3.rds",
+  bucket = "thomasguinhut",
+  opts = list(region = "")
+)
+
+rm(list = ls())

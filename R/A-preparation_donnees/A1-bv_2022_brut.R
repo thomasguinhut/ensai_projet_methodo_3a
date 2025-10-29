@@ -34,8 +34,8 @@ resultats_2022_t1_2 <- resultats_2022_t1_1 %>%
          ID = paste0(COM, "_", `Code du b.vote`)) %>% 
   rename(DEP = `Code du département`,
          BV = `Code du b.vote`,
-         NOM_COM = `Libellé de la commune`) %>% 
-  dplyr::select(ID, DEP, COM, NOM_COM, BV) %>% 
+         COM_LIB = `Libellé de la commune`) %>% 
+  dplyr::select(ID, DEP, COM, COM_LIB, BV) %>% 
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
 
@@ -46,8 +46,8 @@ resultats_2022_t2_2 <- resultats_2022_t2_1 %>%
          ID = paste0(COM, "_", `Code du b.vote`)) %>% 
   rename(DEP = `Code du département`,
          BV = `Code du b.vote`,
-         NOM_COM = `Libellé de la commune`) %>% 
-  dplyr::select(ID, DEP, COM, NOM_COM, BV) %>% 
+         COM_LIB = `Libellé de la commune`) %>% 
+  dplyr::select(ID, DEP, COM, COM_LIB, BV) %>% 
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
 

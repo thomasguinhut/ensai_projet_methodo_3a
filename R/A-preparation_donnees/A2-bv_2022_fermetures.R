@@ -33,13 +33,13 @@ regions <- data.frame(
           "28", "32", "44", "52",
           "53", "75", "76",
           "84", "93", "94"),
-  NOM_REG = c("Île-de-France", "Centre-Val de Loire", "Bourgogne-Franche-Comté",
+  REG_LIB = c("Île-de-France", "Centre-Val de Loire", "Bourgogne-Franche-Comté",
               "Normandie", "Hauts-de-France", "Grand Est", "Pays de la Loire",
               "Bretagne", "Nouvelle-Aquitaine", "Occitanie",
               "Auvergne-Rhône-Alpes", "Provence-Alpes-Côte d'Azur", "Corse")
 )
 
-regions$NOM_REG <- factor(regions$NOM_REG)
+regions$REG_LIB <- factor(regions$REG_LIB)
 
 glimpse(regions)
 
@@ -66,7 +66,7 @@ departements <- data.frame(
     "90", "91", "92", "93",
     "94", "95"
   ),
-  NOM_DEP = c(
+  DEP_LIB = c(
     "Ain", "Aisne", "Allier", "Alpes-de-Haute-Provence", "Hautes-Alpes",
     "Alpes-Maritimes", "Ardèche", "Ardennes", "Ariège", "Aube",
     "Aude", "Aveyron", "Bouches-du-Rhône", "Calvados", "Cantal",
@@ -91,15 +91,15 @@ departements <- data.frame(
   stringsAsFactors = FALSE
 )
 
-departements$NOM_DEP <- factor(departements$NOM_DEP)
+departements$DEP_LIB <- factor(departements$DEP_LIB)
 
 glimpse(departements)
 
 # On ajoute les noms à la base et on retire les Outre-mer
 communes_2022_2 <- communes_2022_1 %>%
-  rename(NOM_COM = LIBELLE) %>% 
+  rename(COM_LIB = LIBELLE) %>% 
   filter(TYPECOM == "COM") %>%
-  dplyr::select(COM, REG, DEP, NOM_COM) %>%
+  dplyr::select(COM, REG, DEP, COM_LIB) %>%
   left_join(regions, by = "REG") %>%
   left_join(departements, by = "DEP") %>% 
   filter(!(REG %in%c("01", "02", "03", "04", "06")))
@@ -160,8 +160,11 @@ communes_20h <- c(
 # Ajout des horaires à la base
 communes_2022_3 <- communes_2022_2 %>%
   mutate(
-    FERMETURE_20H = ifelse(COM %in% communes_20h, TRUE, FALSE)
+    FERMETURE = ifelse(COM %in% communes_20h, "20h", "19h")
   )
+
+communes_2022_3$FERMETURE <- factor(communes_2022_3$FERMETURE,
+                                    levels = c("19h", "20h"))
 
 
 ################################################################################
@@ -183,10 +186,10 @@ glimpse(communes_2022_3)
 bv_2022_2 <- bv_2022_1 %>%
   left_join(
     communes_2022_3 %>%
-      dplyr::select(COM, REG, NOM_REG, NOM_DEP, FERMETURE_20H),
+      dplyr::select(COM, REG, REG_LIB, DEP_LIB, FERMETURE),
     by = "COM"
   ) %>% 
-  dplyr::select(ID, REG, NOM_REG, DEP, NOM_DEP, COM, NOM_COM, BV, FERMETURE_20H)
+  dplyr::select(ID, REG, REG_LIB, DEP, DEP_LIB, COM, COM_LIB, BV, FERMETURE)
 
 glimpse(bv_2022_2)
 

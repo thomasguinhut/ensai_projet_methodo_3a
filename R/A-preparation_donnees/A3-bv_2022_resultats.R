@@ -62,8 +62,8 @@ resultats_2022_t1_2 <- resultats_2022_t1_1 %>%
          PECRESSE_T1 = ...89,
          POUTOU_T1 = ...96,
          DUPONTAIGNAN_T1 = ...103,
-         NOM_COM = `Libellé de la commune`) %>% 
-  dplyr::select(ID, DEP, COM, NOM_COM, BV, INSCRITS_T1, VOTANTS_T1, EXPRIMES_T1,
+         COM_LIB = `Libellé de la commune`) %>% 
+  dplyr::select(ID, DEP, COM, COM_LIB, BV, INSCRITS_T1, VOTANTS_T1, EXPRIMES_T1,
                 ARTHAUD_T1, ROUSSEL_T1, MACRON_T1, LASSALLE_T1, LEPEN_T1,
                 ZEMMOUR_T1, MELENCHON_T1, HIDALGO_T1, JADOT_T1, JADOT_T1,
                 PECRESSE_T1, POUTOU_T1, DUPONTAIGNAN_T1) %>% 
@@ -83,8 +83,8 @@ resultats_2022_t2_2 <- resultats_2022_t2_1 %>%
          EXPRIMES_T2 = Exprimés,
          MACRON_T2 = Voix,
          LEPEN_T2 = ...33,
-         NOM_COM = `Libellé de la commune`) %>% 
-  dplyr::select(ID, DEP, COM, NOM_COM, BV, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2,
+         COM_LIB = `Libellé de la commune`) %>% 
+  dplyr::select(ID, DEP, COM, COM_LIB, BV, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2,
                 MACRON_T2, LEPEN_T2) %>% 
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
@@ -116,7 +116,7 @@ glimpse(bv_2022_2)
 # On fusionne avec la dernière version de la base des bureaux de vote.
 bv_2022_3 <- bv_2022_2 %>%
   inner_join(resultats_2022 %>% 
-               dplyr::select(-c(DEP, COM, NOM_COM, BV)),  by = "ID")
+               dplyr::select(-c(DEP, COM, COM_LIB, BV)),  by = "ID")
 
 glimpse(bv_2022_3)
 

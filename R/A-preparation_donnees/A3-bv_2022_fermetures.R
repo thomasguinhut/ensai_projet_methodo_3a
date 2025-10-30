@@ -6,7 +6,7 @@ communes_2022_1 <-
   aws.s3::s3read_using(
     FUN = readr::read_delim,
     delim = ",",
-    object = "projet_methodo_3a/communes_2022.csv",
+    object = "diffusion/projet_methodo_3a/communes_2022.csv",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
@@ -16,7 +16,7 @@ glimpse(communes_2022_1)
 bv_2022_1 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "projet_methodo_3a/bv_2022_1.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_1.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
@@ -201,7 +201,7 @@ glimpse(bv_2022_2)
 aws.s3::s3write_using(
   bv_2022_2,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "projet_methodo_3a/bv_2022_2.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022_2.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

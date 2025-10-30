@@ -1,7 +1,7 @@
 bv_2022 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "projet_methodo_3a/bv_2022_4.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_4.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
@@ -9,7 +9,7 @@ bv_2022 <-
 aws.s3::s3write_using(
   bv_2022,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "projet_methodo_3a/bv_2022.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

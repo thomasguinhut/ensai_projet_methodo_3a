@@ -5,7 +5,7 @@
 grille_densite_1 <-
   aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
-    object = "projet_methodo_3a/grille_densite_2025_cog2022.xlsx",
+    object = "diffusion/projet_methodo_3a/grille_densite_2025_cog2022.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
@@ -15,7 +15,7 @@ glimpse(grille_densite_1)
 bv_2022_3 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "projet_methodo_3a/bv_2022_3.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_3.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
@@ -90,7 +90,7 @@ glimpse(bv_2022_4)
 aws.s3::s3write_using(
   bv_2022_4,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "projet_methodo_3a/bv_2022_4.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022_4.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

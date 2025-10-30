@@ -2,42 +2,42 @@
 ############################ Importation des données ###########################
 ################################################################################
 
-resultats_2022_t1_1 <-
+resultats_bv_2022_t1_1 <-
   aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
-    object = "diffusion/projet_methodo_3a/resultats_2022_t1_bv.xlsx",
+    object = "diffusion/projet_methodo_3a/resultats_bv_2022_t1.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(resultats_2022_t1_1)
+glimpse(resultats_bv_2022_t1_1)
 
-resultats_2022_t2_1 <-
+resultats_bv_2022_t2_1 <-
   aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
-    object = "diffusion/projet_methodo_3a/resultats_2022_t2_bv.xlsx",
+    object = "diffusion/projet_methodo_3a/resultats_bv_2022_t2.xlsx",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(resultats_2022_t2_1)
+glimpse(resultats_bv_2022_t2_1)
 
-bv_2022_2 <-
+bv_2022_final_3 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "diffusion/projet_methodo_3a/bv_2022_2.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_final_3.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(bv_2022_2)
+glimpse(bv_2022_final_3)
 
 
 ################################################################################
 ############################ Nettoyage des bases ###############################
 ################################################################################
 
-resultats_2022_t1_2 <- resultats_2022_t1_1 %>% 
+resultats_bv_2022_t1_2 <- resultats_bv_2022_t1_1 %>% 
   dplyr::select(`Code du département`, `Code de la commune`, `Code du b.vote`,
                 Inscrits, Votants, Exprimés, Voix, ...33, ...40, ...47, ...54,
                 ...61, ...68, ...75, ...82, ...89, ...96, ...103,
@@ -70,7 +70,7 @@ resultats_2022_t1_2 <- resultats_2022_t1_1 %>%
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
 
-resultats_2022_t2_2 <- resultats_2022_t2_1 %>% 
+resultats_bv_2022_t2_2 <- resultats_bv_2022_t2_1 %>% 
   dplyr::select(`Code du département`, `Code de la commune`, `Code du b.vote`,
                 Inscrits, Votants, Exprimés, Voix, ...33,
                 `Libellé de la commune`) %>% 
@@ -89,8 +89,8 @@ resultats_2022_t2_2 <- resultats_2022_t2_1 %>%
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ"))) # On retirer les Outre-mer
 
-setdiff(resultats_2022_t1_2$ID, resultats_2022_t2_2$ID)
-setdiff(resultats_2022_t2_2$ID, resultats_2022_t1_2$ID)
+setdiff(resultats_bv_2022_t1_2$ID, resultats_bv_2022_t2_2$ID)
+setdiff(resultats_bv_2022_t2_2$ID, resultats_bv_2022_t1_2$ID)
 
 # Aucun ID différent entre les deux jeux de données.
 # Les deux ensembles, étant de même taille, sont identiques.
@@ -101,24 +101,24 @@ setdiff(resultats_2022_t2_2$ID, resultats_2022_t1_2$ID)
 ################################ Fusions #######################################
 ################################################################################
 
-# On fusione les résultats des deux tours des présidentielles 2022
-resultats_2022 <- resultats_2022_t1_2 %>%
+# On fusionne les résultats des deux tours des présidentielles 2022
+resultats_bv_2022 <- resultats_bv_2022_t1_2 %>%
   dplyr::inner_join(
-    resultats_2022_t2_2 %>%
+    resultats_bv_2022_t2_2 %>%
       dplyr::select(ID, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2, MACRON_T2,
                     LEPEN_T2),
     by = "ID"
   )
 
-glimpse(resultats_2022)
-glimpse(bv_2022_2)
+glimpse(resultats_bv_2022)
+glimpse(bv_2022_final_3)
 
 # On fusionne avec la dernière version de la base des bureaux de vote.
-bv_2022_3 <- bv_2022_2 %>%
-  inner_join(resultats_2022 %>% 
+bv_2022_final_4 <- bv_2022_final_3 %>%
+  inner_join(resultats_bv_2022 %>% 
                dplyr::select(-c(DEP, COM, COM_LIB, BV)),  by = "ID")
 
-glimpse(bv_2022_3)
+glimpse(bv_2022_final_4)
 
 
 ################################################################################
@@ -126,9 +126,9 @@ glimpse(bv_2022_3)
 ################################################################################
 
 aws.s3::s3write_using(
-  bv_2022_3,
+  bv_2022_final_4,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "diffusion/projet_methodo_3a/bv_2022_3.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022_final_4.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

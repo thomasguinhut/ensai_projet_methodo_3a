@@ -12,22 +12,22 @@ grille_densite_1 <-
 
 glimpse(grille_densite_1)
 
-bv_2022_3 <-
+bv_2022_final_4 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "diffusion/projet_methodo_3a/bv_2022_3.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_final_4.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(bv_2022_3)
+glimpse(bv_2022_final_4)
 
 
 ################################################################################
 ############################ Nettoyage des bases ###############################
 ################################################################################
 
-names(grille_densite_1) <- grille_densite_1[4,]
+names(grille_densite_1) <- as.character(grille_densite_1[4,])
 grille_densite_2 <- grille_densite_1[-c(1:4),]
 
 grille_densite_3 <- grille_densite_2 %>% 
@@ -68,7 +68,7 @@ grille_densite_3$DENS7_LIB <- factor(
 
 glimpse(grille_densite_3)
 
-setdiff(bv_2022_3$COM, grille_densite_3$COM)
+setdiff(bv_2022_final_4$COM, grille_densite_3$COM)
 # Aucune commune de la base des bureaux de vote n'est absente de la grille de
 # densité.
 
@@ -77,10 +77,10 @@ setdiff(bv_2022_3$COM, grille_densite_3$COM)
 ################################ Fusion ########################################
 ################################################################################
 
-bv_2022_4 <- bv_2022_3 %>% 
+bv_2022_final_5 <- bv_2022_final_4 %>% 
   left_join(grille_densite_3, by = "COM")
 
-glimpse(bv_2022_4)
+glimpse(bv_2022_final_5)
 
 
 ################################################################################
@@ -88,9 +88,9 @@ glimpse(bv_2022_4)
 ################################################################################
 
 aws.s3::s3write_using(
-  bv_2022_4,
+  bv_2022_final_5,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "diffusion/projet_methodo_3a/bv_2022_4.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022_final_5.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

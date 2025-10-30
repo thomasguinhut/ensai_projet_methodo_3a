@@ -1,4 +1,6 @@
-glimpse(bv_2022)
+glimpse(bv_2022_final)
+
+names(bv_2022_final)
 
 round(prop.table(table(bv_2022$FERMETURE)) * 100, 1)
 

@@ -8,20 +8,21 @@ communes_2022_1 <-
     delim = ",",
     object = "diffusion/projet_methodo_3a/communes_2022.csv",
     bucket = "thomasguinhut",
-    opts = list("region" = "")
+    opts = list("region" = ""),
+    show_col_types = FALSE
   )
 
 glimpse(communes_2022_1)
 
-bv_2022_1 <-
+bv_2022_final_2 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "diffusion/projet_methodo_3a/bv_2022_1.rds",
+    object = "diffusion/projet_methodo_3a/bv_2022_final_2.rds",
     bucket = "thomasguinhut",
     opts = list("region" = "")
   )
 
-glimpse(bv_2022_1)
+glimpse(bv_2022_final_2)
 
 
 ################################################################################
@@ -171,19 +172,19 @@ communes_2022_3$FERMETURE <- factor(communes_2022_3$FERMETURE,
 ################################ Fusion ########################################
 ################################################################################
 
-setdiff(bv_2022_1$COM, communes_2022_3$COM)
-setdiff(communes_2022_3$COM, bv_2022_1$COM)
+setdiff(bv_2022_final_2$COM, communes_2022_3$COM)
+setdiff(communes_2022_3$COM, bv_2022_final_2$COM)
 
 # Six communes, toutes situées dans la Meuse, n'ont pas de bureaux de vote.
 # On fusionne avec l'heure de fermeture des bureaux de vote en faisant donc un
-# left_join.
+# left_join sur bv_2022_final_2.
 
-glimpse(bv_2022_1)
+glimpse(bv_2022_final_2)
 glimpse(communes_2022_3)
 
 # En plus de l'heure de fermeture, on ajoute le nom du département et de la
 # région
-bv_2022_2 <- bv_2022_1 %>%
+bv_2022_final_3 <- bv_2022_final_2 %>%
   left_join(
     communes_2022_3 %>%
       dplyr::select(COM, REG, REG_LIB, DEP_LIB, FERMETURE),
@@ -191,7 +192,7 @@ bv_2022_2 <- bv_2022_1 %>%
   ) %>% 
   dplyr::select(ID, REG, REG_LIB, DEP, DEP_LIB, COM, COM_LIB, BV, FERMETURE)
 
-glimpse(bv_2022_2)
+glimpse(bv_2022_final_3)
 
 
 ################################################################################
@@ -199,9 +200,9 @@ glimpse(bv_2022_2)
 ################################################################################
 
 aws.s3::s3write_using(
-  bv_2022_2,
+  bv_2022_final_3,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "diffusion/projet_methodo_3a/bv_2022_2.rds",
+  object = "diffusion/projet_methodo_3a/bv_2022_final_3.rds",
   bucket = "thomasguinhut",
   opts = list(region = "")
 )

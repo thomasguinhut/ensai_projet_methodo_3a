@@ -108,7 +108,9 @@ resultats_bv_2022 <- resultats_bv_2022_t1_2 %>%
       dplyr::select(ID, INSCRITS_T2, VOTANTS_T2, EXPRIMES_T2, MACRON_T2,
                     LEPEN_T2),
     by = "ID"
-  )
+  ) %>% 
+  # On convertit les résultats électoraux en entiers pour être cohérent
+  mutate(across(ends_with(c("T1", "T2")), as.integer))
 
 glimpse(resultats_bv_2022)
 glimpse(bv_2022_final_3)

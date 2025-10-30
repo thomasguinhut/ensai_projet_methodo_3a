@@ -1,22 +1,21 @@
-glimpse(bv_2022_final)
+glimpse(data.frame(bv_2022_final))
 
-names(bv_2022_final)
-
-round(prop.table(table(bv_2022$FERMETURE)) * 100, 1)
+round(prop.table(table(bv_2022_final$FERMETURE)) * 100, 1)
 
 round(
-  prop.table(table(bv_2022$REG_LIB, bv_2022$FERMETURE), margin = 1) * 100,
+  prop.table(table(bv_2022_final$REG_LIB, bv_2022_final$FERMETURE), margin = 1) * 100,
   1
 )
 
 round(
-  prop.table(table(bv_2022$DEP_LIB, bv_2022$FERMETURE), margin = 1) * 100,
+  prop.table(table(bv_2022_final$DEP_LIB, bv_2022_final$FERMETURE), margin = 1) * 100,
   1
 )
 
 round(
-  prop.table(table(bv_2022$DENS7_LIB, bv_2022$FERMETURE), margin = 1) * 100,
+  prop.table(table(bv_2022_final$DENS7_LIB, bv_2022_final$FERMETURE), margin = 1) * 100,
   1
 )
 
-hist(bv_2022$INSCRITS_T1)
+hist(bv_2022_final$INSCRITS_T1)
+

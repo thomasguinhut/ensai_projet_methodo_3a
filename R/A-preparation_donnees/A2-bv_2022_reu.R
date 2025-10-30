@@ -44,7 +44,8 @@ bv_2022_reu_2 %>%
 
 # 55 + 124 bureaux de vote sont dans bv_2022_reu_2 sans être dans
 # bv_2022_final_1, ce qui est anormal. En réalité, on remarque que cela semble
-# entièrement dû à un problème d'encodage de l'id du bureau de vote (absence de 4 chiffres).
+# entièrement dû à un problème d'encodage de l'id du bureau de vote (absence de
+# 4 chiffres).
 
 # On ajoute ainsi les "0" manquants à la gauche du numéro du bureau de vote déjà
 # présent, et ce pour arriver à 4 chiffes en tout après le tiret du 8.

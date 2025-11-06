@@ -15,8 +15,8 @@ glimpse(resultats_bv_2022_t1_1)
 resultats_bv_2022_t2_1 <-
   aws.s3::s3read_using(
     FUN = readxl::read_xlsx,
-    object = "projet-ensai-methodo-3a/sources/resultats_bv_2022_t2.xlsx",
-    bucket = "thomasguinhut",
+    object = "/sources/resultats_bv_2022_t2.xlsx",
+    bucket = "projet-ensai-methodo-3a",
     opts = list("region" = "")
   )
 
@@ -72,8 +72,8 @@ glimpse(bv_2022_final_1)
 aws.s3::s3write_using(
   bv_2022_final_1,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "projet-ensai-methodo-3a/export_bv_finaux/bv_2022_final_1.rds",
-  bucket = "thomasguinhut",
+  object = "/export_bv_finaux/bv_2022_final_1.rds",
+  bucket = "projet-ensai-methodo-3a",
   opts = list(region = "")
 )
 

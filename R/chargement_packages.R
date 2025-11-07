@@ -1,7 +1,5 @@
 # -------------------------------------------------------------------
-# Script non interactif pour installer les packages nécessaires
-# dans un environnement RStudio Onyxia, avec gestion renv
-# Optimisé pour éviter les réinstallations inutiles
+# Script optimisé pour réutiliser les packages déjà installés dans Onyxia
 # -------------------------------------------------------------------
 
 # 1. Configuration de l'environnement
@@ -12,29 +10,26 @@ options(
   install.packages.check.source = "no"
 )
 
-# 2. Chargement (ou installation) de renv
+# 2. Chargement de renv
 if (!requireNamespace("renv", quietly = TRUE)) {
   cat("Installation de renv...\n")
   install.packages("renv", quiet = TRUE)
 }
-suppressMessages(suppressPackageStartupMessages({
-  library(renv)
-  options(
-    renv.config.restore.prompt = FALSE,
-    renv.consent = TRUE
-  )
-  Sys.setenv(RENV_FORCE_PROMPT = "FALSE")
-}))
 
-# 3. Initialisation ou restauration de renv
-if (file.exists("renv.lock")) {
-  cat("Restauration de l'environnement renv...\n")
-  sink("/dev/null")  # Masquer les logs de restauration
-  renv::restore(prompt = FALSE)
-  sink()
-} else {
+# 3. Initialisation de renv (uniquement si renv.lock n'existe pas)
+if (!file.exists("renv.lock")) {
   cat("Initialisation du projet avec renv...\n")
   renv::init(bare = TRUE, restart = FALSE, prompt = FALSE)
+} else {
+  cat("Restauration de l'environnement renv...\n")
+  # Vérifier si renv/library/ est vide
+  if (!dir.exists("renv/library") || length(list.dirs("renv/library", recursive = FALSE)) == 0) {
+    sink("/dev/null")
+    renv::restore(prompt = FALSE)
+    sink()
+  } else {
+    cat("Les packages sont déjà installés dans renv/. Passage à la suite.\n")
+  }
 }
 
 # 4. Liste des packages nécessaires
@@ -42,20 +37,16 @@ packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr")
 
 # 5. Fonction pour installer/charger un package (si nécessaire)
 install_and_load <- function(pkg) {
-  # Installer le package s'il manque (via renv pour la reproductibilité)
+  # Vérifier si le package est déjà chargé ou disponible
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cat(paste0("→ Installation du package : ", pkg, "\n"))
-    sink("/dev/null")  # Masquer les logs d'installation
+    sink("/dev/null")
     renv::install(pkg, prompt = FALSE)
     sink()
   }
-  
   # Charger le package
-  if (!suppressMessages(require(pkg, character.only = TRUE, quietly = TRUE))) {
-    cat(paste0("⚠️ Impossible de charger le package : ", pkg, "\n"))
-  } else {
-    cat(paste0("✓ ", pkg, ", version: ", packageVersion(pkg), "\n"))
-  }
+  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+  cat(paste0("✓ ", pkg, ", version: ", packageVersion(pkg), "\n"))
 }
 
 # 6. Installer et charger les packages
@@ -69,4 +60,4 @@ if (!file.exists("renv.lock")) {
 }
 
 cat("✅ Environnement prêt\n")
-rm(list = setdiff(ls(), "bv_2022_final"))  # Nettoyage (à adapter selon tes besoins)
+rm(list = setdiff(ls(), "bv_2022_final"))

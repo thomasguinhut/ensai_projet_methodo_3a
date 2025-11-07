@@ -26,7 +26,7 @@ if (!requireNamespace("renv", quietly = TRUE)) {
 # 4. Vérification si renv.lock existe et restaurer l'environnement, sinon on initialise
 if (file.exists("renv.lock")) {
   cat("Restauration de l'environnement renv...\n")
-  if (!(file.exists("renv/library"))){
+  if (!(file.exists("renv/library/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu/dplyr"))){
     cat("Installation des packages contenus dans renv.lock...\n")
   }
   sink("/dev/null")                      # Redirige la sortie vers nowhere

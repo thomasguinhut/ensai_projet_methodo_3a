@@ -63,13 +63,17 @@ if (length(missing_pkgs) > 0) {
   )
 }
 
-# 6. Chargement des packages avec version
+# 6. Chargement des packages avec version (optimisé pour éviter les redondances)
 cat("Chargement des packages...\n")
 invisible(lapply(packages_requis, function(pkg) {
-  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-  package_version <- packageVersion(pkg)
-  cat(paste0("✓ ", pkg, ", version: ", package_version, "\n"))
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    cat(paste0("⚠️  ", pkg, " n'est pas installé ou ne peut pas être chargé.\n"))
+  } else {
+    suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+    package_version <- packageVersion(pkg)
+    cat(paste0("✓ ", pkg, ", version: ", package_version, "\n"))
+  }
 }))
-cat("✅ Environnement prêt\n")
 
+cat("✅ Environnement prêt\n")
 rm(list = setdiff(ls(), "bv_2022_final"))

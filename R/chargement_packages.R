@@ -47,7 +47,9 @@ if (file.exists("renv.lock")) {
 
 # 5. Vérification automatique des packages manquants
 cat("Vérification des dépendances...\n")
+sink("/dev/null")                      # Redirige la sortie vers nowhere
 deps <- renv::dependencies()
+sink()                                 # Rétablit la sortie standard
 installed_pkgs <- deps$Package
 missing_pkgs <- setdiff(packages_requis, installed_pkgs)
 

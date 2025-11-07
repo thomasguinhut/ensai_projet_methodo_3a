@@ -20,6 +20,6 @@ aws.s3::s3write_using(
   opts = list(region = "")
 )
 
-cat("✅ Base de données bv_2022_final chargée")
+cat("✅ Base de données bv_2022_final chargée\n")
 
 rm(list = setdiff(ls(), "bv_2022_final"))

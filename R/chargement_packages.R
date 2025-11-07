@@ -26,10 +26,10 @@ if (!requireNamespace("renv", quietly = TRUE)) {
 # 4. Vérification si renv.lock existe et restaurer l'environnement, sinon on initialise
 if (file.exists("renv.lock")) {
   cat("Restauration de l'environnement renv...\n")
-  sink("/dev/null")                      # Redirige la sortie vers nowhere
   if (!(file.exists("renv/library"))){
     cat("Installation des packages contenus dans renv.lock...\n")
   }
+  sink("/dev/null")                      # Redirige la sortie vers nowhere
   renv::restore(prompt = FALSE)
   sink()                                 # Rétablit la sortie standard
 } else {
@@ -73,5 +73,7 @@ invisible(lapply(packages_requis, function(pkg) {
   package_version <- packageVersion(pkg)
   cat(paste0("✓ ", pkg, ", version: ", package_version, "\n"))
 }))
+
+cat("✅ Environnement de travail prêt\n")
 
 rm(list = setdiff(ls(), "bv_2022_final"))

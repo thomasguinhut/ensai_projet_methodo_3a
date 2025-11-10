@@ -22,15 +22,15 @@ resultats_bv_2022_t2_1 <-
 
 glimpse(resultats_bv_2022_t2_1)
 
-bv_2022_final_3 <-
+bv_2022_final_1 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "/export_bv_finaux/bv_2022_final_3.rds",
+    object = "/export_bv_finaux/bv_2022_final_1.rds",
     bucket = "projet-ensai-methodo-3a",
     opts = list("region" = "")
   )
 
-glimpse(bv_2022_final_3)
+glimpse(bv_2022_final_1)
 
 
 ################################################################################
@@ -113,14 +113,14 @@ resultats_bv_2022 <- resultats_bv_2022_t1_2 %>%
   mutate(across(ends_with(c("T1", "T2")), as.integer))
 
 glimpse(resultats_bv_2022)
-glimpse(bv_2022_final_3)
+glimpse(bv_2022_final_1)
 
 # On fusionne avec la dernière version de la base des bureaux de vote.
-bv_2022_final_4 <- bv_2022_final_3 %>%
+bv_2022_final_2 <- bv_2022_final_1 %>%
   inner_join(resultats_bv_2022 %>% 
                dplyr::select(-c(DEP, COM, COM_LIB, BV)),  by = "ID")
 
-glimpse(bv_2022_final_4)
+glimpse(bv_2022_final_2)
 
 
 ################################################################################
@@ -128,9 +128,9 @@ glimpse(bv_2022_final_4)
 ################################################################################
 
 aws.s3::s3write_using(
-  bv_2022_final_4,
+  bv_2022_final_2,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "/export_bv_finaux/bv_2022_final_4.rds",
+  object = "/export_bv_finaux/bv_2022_final_2.rds",
   bucket = "projet-ensai-methodo-3a",
   opts = list(region = "")
 )

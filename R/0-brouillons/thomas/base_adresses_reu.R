@@ -8,11 +8,11 @@ adresses_2022_reu$schema
 
 names(adresses_2022_reu)
 
-head(adresses_2022_reu, 5) %>% collect()
+head(adresses_2022_reu, 15) %>% collect()
 
 adresses_2022_reu %>% 
-  filter(code_commune_ref == "24222") %>% 
-  filter(str_detect(geo_adresse, "27")) %>% 
+  filter(code_commune_ref == "35047") %>% 
+  filter(str_detect(geo_adresse, "Petit Bé")) %>% 
   collect()
 
 filosofi_2019_200m <-

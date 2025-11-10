@@ -7,10 +7,8 @@ round(
   1
 )
 
-round(
-  prop.table(table(bv_2022_final$DEP_LIB, bv_2022_final$FERMETURE), margin = 1) * 100,
-  1
-)
+round(prop.table(table(bv_2022_final$DEP_LIB, bv_2022_final$FERMETURE), margin = 1) * 100, 1)[order(-round(prop.table(table(bv_2022_final$DEP_LIB, bv_2022_final$FERMETURE), margin = 1) * 100, 1)[, "20h"]), ]
+
 
 round(
   prop.table(table(bv_2022_final$DENS7_LIB, bv_2022_final$FERMETURE), margin = 1) * 100,

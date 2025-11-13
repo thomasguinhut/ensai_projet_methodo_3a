@@ -190,10 +190,11 @@ bv_2022_final_4 <- bv_2022_final_3 %>%
       dplyr::select(COM, REG, REG_LIB, DEP_LIB, FERMETURE),
     by = "COM"
   ) %>% 
-  dplyr::select(ID, REG, REG_LIB, DEP, DEP_LIB, COM, COM_LIB, BV, FERMETURE)
+  dplyr::select(ID, REG, REG_LIB, DEP, DEP_LIB, COM, COM_LIB, BV, FERMETURE,
+                everything())
 
 glimpse(bv_2022_final_4)
-
+str(bv_2022_final_3)
 
 ################################################################################
 ################################ Export ########################################

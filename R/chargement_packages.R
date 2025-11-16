@@ -87,9 +87,4 @@ chargement_packages <- function(packages_requis) {
   
   cat("✅ Environnement de travail prêt\n")
   
-  # Nettoyage de l'environnement global (garde seulement les données existantes)
-  objects_to_keep <- setdiff(ls(envir = .GlobalEnv), 
-                             c("chargement_packages", "packages_requis"))
-  rm(list = setdiff(ls(envir = .GlobalEnv), objects_to_keep), 
-     envir = .GlobalEnv)
 }

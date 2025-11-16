@@ -1,4 +1,4 @@
-glimpse(data.frame(bv_2022_final))
+levels(bv_2022_final$REG_LIB)
 
 round(prop.table(table(bv_2022_final$FERMETURE)) * 100, 1)
 

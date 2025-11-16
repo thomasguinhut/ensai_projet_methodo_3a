@@ -615,6 +615,12 @@
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
     },
+    "forcats": {
+      "Package": "forcats",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Repository": "CRAN"
+    },
     "generics": {
       "Package": "generics",
       "Version": "0.1.4",
@@ -650,6 +656,12 @@
     "ggplot2": {
       "Package": "ggplot2",
       "Version": "4.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN"
+    },
+    "ggtext": {
+      "Package": "ggtext",
+      "Version": "0.1.2",
       "Source": "Repository",
       "Repository": "CRAN"
     },

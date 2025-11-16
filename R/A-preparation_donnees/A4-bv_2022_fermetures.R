@@ -2,6 +2,8 @@
 ############################ Importation des données ###########################
 ################################################################################
 
+objets_initiaux <- ls()
+
 communes_2022_1 <-
   aws.s3::s3read_using(
     FUN = readr::read_delim,
@@ -208,4 +210,5 @@ aws.s3::s3write_using(
   opts = list(region = "")
 )
 
-rm(list = ls())
+nouveaux_objets <- setdiff(ls(), objets_initiaux)
+rm(nouveaux_objets, list = nouveaux_objets)

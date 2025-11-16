@@ -7,7 +7,7 @@ source("R/chargement_packages.R")
 
 # Définition des packages
 packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
-                     "data.table", "sf")
+                     "data.table", "sf", "forcats")
 
 chargement_packages(packages_requis)
 
@@ -17,3 +17,4 @@ chargement_packages(packages_requis)
 ################################################################################
 
 source("R/A-preparation_donnees/A-bv_2022.R")
+

@@ -7,6 +7,7 @@
 #' 
 #' @examples
 #' chargement_packages(c("dplyr", "ggplot2", "data.table"))
+
 chargement_packages <- function(packages_requis) {
   
   # Configuration du chemin de bibliothèque et désactivation des prompts interactifs
@@ -59,7 +60,7 @@ chargement_packages <- function(packages_requis) {
   } else {
     cat("Initialisation du projet avec renv...\n")
     renv::init(bare = TRUE, restart = FALSE, 
-               settings = list(snapshot.type = "explicit"))
+               settings = list(snapshot.type = "implicit"))
     
     cat("Installation des packages requis...\n")
     sink("/dev/null")

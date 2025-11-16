@@ -55,7 +55,7 @@ chargement_packages <- function(packages_requis) {
   } else {
     cat("Initialisation du projet avec renv...\n")
     renv::init(bare = TRUE, restart = FALSE, 
-               settings = list(snapshot.type = "implicit"))
+               settings = list(snapshot.type = "explicit"))
     
     cat("Installation des packages requis...\n")
     sink("/dev/null")

@@ -7,6 +7,7 @@
 #' 
 #' @examples
 #' chargement_packages(c("dplyr", "ggplot2", "data.table"))
+
 chargement_packages <- function(packages_requis) {
   
   # Configuration du chemin de bibliothèque et désactivation des prompts interactifs
@@ -31,46 +32,38 @@ chargement_packages <- function(packages_requis) {
     renv::restore(prompt = FALSE)
     sink()
     
-    # Détection des packages manquants dans renv.lock
+    # Détection des packages manquants par rapport à la liste requise
     cat("Vérification des nouveaux packages...\n")
-    lock_content <- jsonlite::fromJSON("renv.lock")
-    packages_in_lock <- names(lock_content$Packages)
-    missing_from_lock <- setdiff(packages_requis, packages_in_lock)
+    installed_in_renv <- rownames(installed.packages(lib.loc = renv::paths$library()))
+    missing_pkgs <- setdiff(packages_requis, installed_in_renv)
     
-    # Installation et enregistrement des packages manquants
-    if (length(missing_from_lock) > 0) {
-      cat("⚠️ Nouveaux packages détectés :", paste(missing_from_lock, collapse = ", "), "\n")
+    # Installation et mise à jour du snapshot si nécessaire
+    if (length(missing_pkgs) > 0) {
+      cat("⚠️ Nouveaux packages détectés :", paste(missing_pkgs, collapse = ", "), "\n")
       cat("Installation automatique...\n")
       
       sink("/dev/null")
-      renv::install(missing_from_lock, prompt = FALSE)
+      renv::install(missing_pkgs, prompt = FALSE)
       sink()
       
-      # Enregistrement explicite dans renv.lock
-      cat("Enregistrement dans renv.lock...\n")
-      for (pkg in missing_from_lock) {
-        renv::record(pkg)
-      }
-      
-      cat("✅ Packages enregistrés dans renv.lock\n")
+      cat("Mise à jour du snapshot renv.lock...\n")
+      renv::snapshot(prompt = FALSE)
+      cat("✅ Snapshot mis à jour\n")
     }
     
     # Branche 2: Si renv.lock n'existe pas, on initialise tout
   } else {
     cat("Initialisation du projet avec renv...\n")
     renv::init(bare = TRUE, restart = FALSE, 
-               settings = list(snapshot.type = "explicit"))
+               settings = list(snapshot.type = "implicit"))
     
     cat("Installation des packages requis...\n")
     sink("/dev/null")
     renv::install(packages_requis, prompt = FALSE)
     sink()
     
-    # Enregistrement de tous les packages dans renv.lock
-    cat("Enregistrement dans renv.lock...\n")
-    for (pkg in packages_requis) {
-      renv::record(pkg)
-    }
+    cat("Création du snapshot renv.lock...\n")
+    renv::snapshot(prompt = FALSE)
   }
   
   # Vérification finale: tous les packages doivent être présents

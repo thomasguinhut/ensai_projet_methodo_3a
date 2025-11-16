@@ -1,4 +1,19 @@
-source("R/chargement_packages.R")
-source("R/A-preparation_donnees/A-bv_2022.R")
+################################################################################
+############################ CHARGEMENT DES PACKAGES ###########################
+################################################################################
 
-boxplot(bv_2022_final$)
+# Importation de la fonction
+source("R/chargement_packages.R")
+
+# Définition des packages
+packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
+                     "data.table", "sf")
+
+chargement_packages(packages_requis)
+
+
+################################################################################
+############################ IMPORTATION DES DONNÉES ###########################
+################################################################################
+
+source("R/A-preparation_donnees/A-bv_2022.R")

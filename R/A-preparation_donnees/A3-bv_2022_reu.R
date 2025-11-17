@@ -43,17 +43,19 @@ glimpse(bv_2022_final_2)
 ############################ Nettoyage des bases ###############################
 ################################################################################
 
+boxplot(bv_sept2022_reu_1$nb_adresses_initial)
+
 unique(substr(bv_sept2022_reu_1$code_commune, 1, 2))
 
 bv_sept2022_reu_2 <- bv_sept2022_reu_1 %>% 
   filter(!(substr(code_commune, 1, 2) == "97")) %>%  # On retire les Outre-mer
   dplyr::select(id_brut_miom, id_brut_reu, id_brut_insee, code_commune,
-                nb_adresses_final) %>% 
+                nb_adresses_initial) %>% 
   rename(ID_REU = id_brut_reu,
          ID_MIOM = id_brut_miom,
          ID_INSEE = id_brut_insee,
          COM = code_commune,
-         NB_ADRS = nb_adresses_final) %>% 
+         NB_ADRS = nb_adresses_initial) %>% 
   mutate(BV_BRUT = sub(".*_", "", ID_INSEE))
 
 sum(is.na(bv_mars2022_reu_1$commune_code))

@@ -52,3 +52,11 @@ for(dep in departements1){
   cat("Département", dep, "terminé et sauvegardé\n")
 }
 rm(departements, departements1)
+
+adresse <- aws.s3::s3read_using(
+  FUN = arrow::read_parquet,
+  object = "sources/table-adresses-reu.parquet",
+  bucket = "projet-ensai-methodo-3a", 
+  opts = list("region" = "")
+)
+str(adresse)

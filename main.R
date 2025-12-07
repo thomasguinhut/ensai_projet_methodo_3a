@@ -2,6 +2,7 @@
 ############################ CHARGEMENT DES PACKAGES ###########################
 ################################################################################
 
+
 # Importation de la fonction
 source("R/chargement_packages.R")
 
@@ -13,9 +14,11 @@ packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
 chargement_packages(packages_requis)
 
 
+
 ################################################################################
 ############################ IMPORTATION DES DONNÉES ###########################
 ################################################################################
+
 
 source("R/A-preparation_donnees/A-bv_2022.R")
 

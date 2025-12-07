@@ -120,7 +120,9 @@ glimpse(bv_2022_final_1)
 # On fusionne avec la dernière version de la base des bureaux de vote.
 bv_2022_final_2 <- bv_2022_final_1 %>%
   inner_join(resultats_bv_2022 %>% 
-               dplyr::select(-c(DEP, COM, COM_LIB, BV)),  by = "ID")
+               dplyr::select(-c(DEP, COM, COM_LIB, BV)),  by = "ID") %>% 
+  # On supprime les bureaux à 0 inscrits
+  filter(!(INSCRITS_T1 == 0 | INSCRITS_T1 == 0))
 
 glimpse(bv_2022_final_2)
 

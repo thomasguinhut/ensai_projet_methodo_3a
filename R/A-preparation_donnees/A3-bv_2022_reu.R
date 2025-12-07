@@ -17,19 +17,7 @@ bv_sept2022_reu_1 <-
 
 glimpse(bv_sept2022_reu_1)
 
-bv_mars2022_reu_1 <- aws.s3::s3read_using(
-  FUN = readr::read_delim,
-  delim = "\t",
-  object = "/sources/bv_mars2022_reu.csv",
-  bucket = "projet-ensai-methodo-3a",
-  opts = list("region" = ""),
-  show_col_types = FALSE,
-  col_types = cols(code_postal = col_character())
-)
-
-glimpse(bv_mars2022_reu_1)
-
-bv_2022_final_2 <-
+bv_2022_final_2.1 <-
   aws.s3::s3read_using(
     FUN = readRDS,
     object = "/export_bv_finaux/bv_2022_final_2.rds",
@@ -37,8 +25,17 @@ bv_2022_final_2 <-
     opts = list("region" = "")
   )
 
-glimpse(bv_2022_final_2)
+glimpse(bv_2022_final_2.1)
 
+cog2022_1 <-
+  aws.s3::s3read_using(
+    FUN = read.csv,
+    object = "/sources/communes_2022.csv",
+    bucket = "projet-ensai-methodo-3a",
+    opts = list("region" = "")
+  )
+
+glimpse(cog2022_1)
 
 
 ################################################################################
@@ -60,26 +57,10 @@ bv_sept2022_reu_2 <- bv_sept2022_reu_1 %>%
   mutate(BV_BRUT = sub(".*_", "", ID_INSEE)) %>% 
   arrange(ID_REU)
 
-bv_mars2022_reu_2 <- bv_mars2022_reu_1 %>%
-  mutate(ID_INSEE = paste0(commune_code, "_", code_normalise_complet),
-         commune_code = ifelse(nchar(commune_code) == 4, 
-                               paste0("0", commune_code), 
-                               commune_code))
-
-unique(substr(bv_mars2022_reu_2$commune_code, 1, 2))
-
-bv_mars2022_reu_3 <- bv_mars2022_reu_2 %>% 
-  filter(!(substr(commune_code, 1, 2) %in% c("97", "98"))) %>% 
-  dplyr::select(commune_code, code_normalise_complet, ID_INSEE) %>% 
-  rename(COM = commune_code,
-         BV_BRUT = code_normalise_complet) %>% 
-  mutate(ID_REU = paste0(COM, "_", BV_BRUT),
-         ID_MIOM = paste0(COM, "_", str_pad(BV_BRUT, width = 4, pad = "0")))
-
 # Faire appariement entre bv_sept et bv_mars avec le ID_INSEE, puis entre
 # bv_final et bv_sept ou bv_mars avec l'ID MIOM
 
-setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2$ID)
+setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2.1$ID)
 
 sum(is.na(bv_sept2022_reu_2$ID_MIOM))
 
@@ -107,7 +88,7 @@ bv_sept2022_reu_2 %>%
 # Faisons ces deux corrections et voyons ensuite s'il reste des bureaux de
 # bv_2022_reu_2 qui ne sont pas présent dans bv_2022_final_1.
 
-bureaux_anormaux <- setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2$ID)
+bureaux_anormaux <- setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2.1$ID)
 bureaux_anormaux <- bureaux_anormaux[!is.na(bureaux_anormaux)]
 
 # Corriger le format en ajoutant des zéros à gauche après le "_"
@@ -118,7 +99,7 @@ bv_sept2022_reu_3$ID_MIOM[bv_sept2022_reu_3$ID_MIOM %in% bureaux_anormaux] <-
   })
 
 # Vérifications
-setdiff(bv_sept2022_reu_3$ID_MIOM, bv_2022_final_2$ID)
+setdiff(bv_sept2022_reu_3$ID_MIOM, bv_2022_final_2.1$ID)
 # Il ne reste plus que les NA
 
 bv_sept2022_reu_3 %>%
@@ -132,13 +113,18 @@ bv_sept2022_reu_4 <- bv_sept2022_reu_3 %>%
       ID_REU == "15014_C09"      ~ "15014_0009",
       ID_REU == "2B166_1 - 1"    ~ "2B166_0001",
       ID_REU == "2B166_2 - 3"    ~ "2B166_0002",
-      grepl("^76217_", ID_REU) ~ paste0("76217_", sprintf("%04d", cumsum(grepl("^76217_", ID_REU)))), # Dieppe
+      grepl("^76217_", ID_REU) ~ {
+        current_num <- cumsum(grepl("^76217_", ID_REU))
+        adjusted_num <- ifelse(current_num >= 7, current_num + 1, current_num)
+        paste0("76217_", sprintf("%04d", adjusted_num))
+      }, # Dieppe (saute 0007)
       grepl("^90010_", ID_REU) ~ paste0("90010_", sprintf("%04d", cumsum(grepl("^90010_", ID_REU)))), # Belfort
+      ID_REU == "16286_3"    ~ "16286_0003",
       .default = ID_MIOM
     )
   )
 
-bv_2022_final_3 <- bv_2022_final_2 %>%
+bv_2022_final_2.2 <- bv_2022_final_2.1 %>%
   mutate(
     ID = case_when(
       ID == "16286_0005"  ~ "16286_0003",
@@ -146,24 +132,106 @@ bv_2022_final_3 <- bv_2022_final_2 %>%
     )
   )
 
-setdiff(bv_sept2022_reu_4$ID_MIOM, bv_2022_final_3$ID)
+setdiff(bv_sept2022_reu_4$ID_MIOM, bv_2022_final_2.2$ID)
 
-bv_sept2022_reu_4 %>%
-  filter(is.na(ID_MIOM)) %>%
-  print(n = 124)
+nx_bv <- bv_sept2022_reu_4 %>%
+  filter(is.na(ID_MIOM)) %>% 
+  pull(ID_REU)
+  
+bv_sept2022_reu_5 <- bv_sept2022_reu_4 %>% 
+  filter(!(ID_REU %in% nx_bv))
 
+setdiff(bv_sept2022_reu_5$ID_MIOM, bv_2022_final_2.2$ID)
 
-test <- bv_2022_final_2 %>%
-  filter(INSCRITS_T1 < 5 | INSCRITS_T2 < 5)
+bv_supprimes <- setdiff(bv_2022_final_2.2$ID, bv_sept2022_reu_5$ID_MIOM)
+
+bv_prisonniers <- c("75056_JUS1")
+
+base_bv_supprimes <- bv_2022_final_2.2 %>% 
+  filter(ID %in% bv_supprimes) %>% 
+  mutate(TAUX_PARTICIPATION_T1 = round(VOTANTS_T1 / INSCRITS_T1 * 100, 1), .after = EXPRIMES_T1)
+
+base_bv_prisonniers <- base_bv_supprimes %>% 
+  filter(TAUX_PARTICIPATION_T1 <= 60 | INSCRITS_T1 < 5)
+  
+bv_prisonniers <- c(bv_prisonniers, base_bv_prisonniers %>% 
+  pull(ID))
+
+bv_2022_final_2.3 <- bv_2022_final_2.2 %>% 
+  filter(!(ID %in% bv_prisonniers))
+
+setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_5$ID_MIOM)
+
+bv_sept2022_reu_6 <- bv_sept2022_reu_5 %>% 
+  mutate(ID_MIOM = case_when(
+    ID_REU == "59508_3" ~ "59508_0103", # problème encodage
+    .default = ID_MIOM
+  ))
+
+setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
+# 8 bv ont été supprimés, à Monclart il n'y a pas d'adresses...
+
+bv_supprimes <- setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
+
+bv_supprimes
+nx_bv
+
+setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
+setdiff(bv_sept2022_reu_6$ID_MIOM, bv_2022_final_2.3$ID)
+
 
 
 ################################################################################
-################################ Fusion ########################################
+############################## Problème des doublons ###########################
 ################################################################################
 
-bv_2022_final_3 <- bv_2022_final_2
+
+length(unique(bv_2022_final_2.3$ID)) == nrow(bv_2022_final_2.3)
+length(unique(bv_sept2022_reu_6$ID_MIOM)) == nrow(bv_sept2022_reu_6)
+bv_sept2022_reu_6$ID_MIOM[duplicated(bv_sept2022_reu_6$ID_MIOM)]
+
+bv_sept2022_reu_7 <- bv_sept2022_reu_6 %>%
+  arrange(ID_MIOM, desc(NB_ADRS)) %>%
+  group_by(ID_MIOM) %>%
+  slice(1) %>%
+  ungroup() %>%
+  left_join(
+    bv_sept2022_reu_6 %>%
+      group_by(ID_MIOM) %>%
+      summarise(NB_ADRS_sup = sum(NB_ADRS) - first(NB_ADRS)) %>%
+      ungroup(),
+    by = "ID_MIOM"
+  ) %>%
+  mutate(NB_ADRS = NB_ADRS + NB_ADRS_sup) %>%
+  select(-NB_ADRS_sup)
+
+length(unique(bv_sept2022_reu_7$ID_MIOM)) == nrow(bv_sept2022_reu_7)
+
+bv_2022_final_3 <- bv_2022_final_2.3
 
 glimpse(bv_2022_final_3)
+
+
+################################################################################
+########################### Vérifications COG ##################################
+################################################################################
+
+
+cog2022_2 <- cog2022_1 %>% 
+  filter(TYPECOM %in% c("COM"),
+         !(substr(COM, 1, 2) == "97"))
+
+setdiff(bv_2022_final_3$COM, cog2022_2$COM)
+setdiff(cog2022_2$COM, bv_2022_final_3$COM) # communes_zero_habitants
+communes_zero_habitants <- setdiff(cog2022_2$COM, bv_2022_final_3$COM)
+
+setdiff(bv_sept2022_reu_6$COM, cog2022_2$COM) # arrondissements de PLM
+setdiff(setdiff(cog2022_2$COM, bv_sept2022_reu_6$COM), communes_zero_habitants)
+# on retrouve les codes Insee de PLM + la commune de Monclart (04126) qui n'est
+# pas dans le REU de septembre 2025
+
+# Tout est ok
+
 
 
 ################################################################################

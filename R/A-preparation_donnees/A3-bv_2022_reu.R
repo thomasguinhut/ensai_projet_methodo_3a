@@ -37,9 +37,18 @@ cog2022_1 <-
 
 glimpse(cog2022_1)
 
+adresses_2022_reu <- arrow::open_dataset(
+  sources = "s3://projet-ensai-methodo-3a/sources/adresses_2022_reu.parquet",
+  format = "parquet",
+  filesystem = "s3"
+)
+
+glimpse(adresses_2022_reu)
+
+
 
 ################################################################################
-############################ Nettoyage des bases ###############################
+########################### Nettoyage de bv_sept2022_reu #######################
 ################################################################################
 
 
@@ -57,8 +66,20 @@ bv_sept2022_reu_2 <- bv_sept2022_reu_1 %>%
   mutate(BV_BRUT = sub(".*_", "", ID_INSEE)) %>% 
   arrange(ID_REU)
 
-# Faire appariement entre bv_sept et bv_mars avec le ID_INSEE, puis entre
-# bv_final et bv_sept ou bv_mars avec l'ID MIOM
+
+
+################################################################################
+##### Etude de la correspondance entre bv_sept2022_reu etbv_2022_final_2 #######
+################################################################################
+
+
+setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2.1$ID)
+setdiff(bv_2022_final_2.1$ID, bv_sept2022_reu_2$ID_MIOM)
+
+# ----------------------------
+# Problème des bureaux présents dans bv_sept2022_reu mais absents de bv_2022_final
+# Il s'agit des "nouveaux bureaux", créés entre la présidentielle et l'extraction du REU
+# ----------------------------
 
 setdiff(bv_sept2022_reu_2$ID_MIOM, bv_2022_final_2.1$ID)
 
@@ -74,7 +95,8 @@ bv_sept2022_reu_2 %>%
 # base bv_sept2022_reu_2
 # - pour les 55 qui n'ont pas de NA dans i_brut_miom, cela semble dû à l'absence
 #   des 4 chiffres. Or, le code du bureau de vote est bien donné. On ajouterait
-#   ainsi les "0" manquants à la gauche du numéro du bureau de vote déjà
+#   ainsi les "0" manquants à la gauche du numéro du bureau de vote déjà. On
+#   appelle ces bureaux les "bureaux_anormaux".
 #   présent, et ce pour arriver à 4 chiffes en tout après le tiret du 8.
 # - pour les 124 qui ont un NA pour leur id_brut_miom, 123 ont pourtant bien un
 #   code pour leur bureau de vote dans la variable correspondante. Comme pour
@@ -106,6 +128,7 @@ bv_sept2022_reu_3 %>%
   filter(is.na(ID_MIOM)) %>%
   print(n = 124)
 
+# Il est possilbe de corriger certains bureaux visuellement
 bv_sept2022_reu_4 <- bv_sept2022_reu_3 %>%
   mutate(
     ID_MIOM = case_when(
@@ -133,25 +156,34 @@ bv_2022_final_2.2 <- bv_2022_final_2.1 %>%
   )
 
 setdiff(bv_sept2022_reu_4$ID_MIOM, bv_2022_final_2.2$ID)
-
+# Les NA qui restent sont les bureaux qui ont été créés entre la présidentielle
+# et l'extraction du REU
 nx_bv <- bv_sept2022_reu_4 %>%
   filter(is.na(ID_MIOM)) %>% 
   pull(ID_REU)
-  
+
+# On les supprime de bv_sept2022_reu
 bv_sept2022_reu_5 <- bv_sept2022_reu_4 %>% 
   filter(!(ID_REU %in% nx_bv))
 
-setdiff(bv_sept2022_reu_5$ID_MIOM, bv_2022_final_2.2$ID)
+setdiff(bv_sept2022_reu_5$ID_MIOM, bv_2022_final_2.2$ID) # tout va bien
 
-bv_supprimes <- setdiff(bv_2022_final_2.2$ID, bv_sept2022_reu_5$ID_MIOM)
+# ----------------------------
+# Problème des bureaux présents dans bv_2022_final mais absents de bv_sept2022_reu
+# Il s'agit soit des bureaux des prisonniers (ou autres cas particuliers), soit
+# des bureaux supprimés entre la présidentielle et l'extraction du REU
+# ----------------------------
+
+setdiff(bv_2022_final_2.2$ID, bv_sept2022_reu_5$ID_MIOM)
+bv_soupcon_suppression <- setdiff(bv_2022_final_2.2$ID, bv_sept2022_reu_5$ID_MIOM)
 
 bv_prisonniers <- c("75056_JUS1")
 
-base_bv_supprimes <- bv_2022_final_2.2 %>% 
-  filter(ID %in% bv_supprimes) %>% 
+base_bv_soupcon_suppression <- bv_2022_final_2.2 %>% 
+  filter(ID %in% bv_soupcon_suppression) %>% 
   mutate(TAUX_PARTICIPATION_T1 = round(VOTANTS_T1 / INSCRITS_T1 * 100, 1), .after = EXPRIMES_T1)
 
-base_bv_prisonniers <- base_bv_supprimes %>% 
+base_bv_prisonniers <- base_bv_soupcon_suppression %>% 
   filter(TAUX_PARTICIPATION_T1 <= 60 | INSCRITS_T1 < 5)
   
 bv_prisonniers <- c(bv_prisonniers, base_bv_prisonniers %>% 
@@ -172,12 +204,6 @@ setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
 # 8 bv ont été supprimés, à Monclart il n'y a pas d'adresses...
 
 bv_supprimes <- setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
-
-bv_supprimes
-nx_bv
-
-setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
-setdiff(bv_sept2022_reu_6$ID_MIOM, bv_2022_final_2.3$ID)
 
 
 
@@ -235,6 +261,15 @@ setdiff(setdiff(cog2022_2$COM, bv_sept2022_reu_6$COM), communes_zero_habitants)
 
 
 ################################################################################
+############################ Corrections REU ###################################
+################################################################################
+
+
+
+
+
+
+################################################################################
 ################################ Export ########################################
 ################################################################################
 
@@ -248,3 +283,10 @@ aws.s3::s3write_using(
 
 nouveaux_objets <- setdiff(ls(), objets_initiaux)
 rm(nouveaux_objets, list = nouveaux_objets)
+
+
+bv_2022_final_3 %>% 
+  filter(ID == (bv_sept2022_reu_7 %>% filter(ID_REU == "01001_1") %>% pull(ID_MIOM))) %>% 
+  pull(INSCRITS_T1)
+
+  

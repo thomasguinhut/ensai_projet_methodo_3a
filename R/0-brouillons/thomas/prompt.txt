@@ -1,0 +1,12 @@
+> bv_supprimes
+[1] "04126_0001" "12085_0002" "12089_0006" "16286_0001" "19028_0003" "33225_0001" "43078_0004" "54334_0002"
+
+j'ai aussi ce vecteur qui correspond à des codes de la variable id dans adresses_2022_reu. J'aimerais que tu écrives un code en R qui fait ceci : 
+
+pour chaque bv_supprimes, il faut créer des adresses dans adresses_2022_reu avec l'id de chacun des bv_supprimes. Les adresses tu ne les inventes pas : il faut piocher aléatoirement parmi celle DE LA MEME commune (c'est a dire avec les 5 premiers chiffres de l'id identique. Si la comune n'a qu'un bureau dans la base, tu prend la moitié des adresses aléatoirement, si elle a n bureaux, tu prend dans chaque bureau proportionnelement au nombre d'inscrits (en faisant cette requette : 
+
+bv_2022_final_3 %>% 
+  filter(ID == (bv_sept2022_reu_7 %>% filter(ID_REU == "01001_1") %>% pull(ID_MIOM))) %>% 
+  pull(INSCRITS_T1)
+
+)

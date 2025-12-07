@@ -9,8 +9,9 @@ adresses_2022_reu$schema
 names(adresses_2022_reu)
 
 adresses_2022_reu %>% 
-  filter(code_commune_ref == "07230") %>% 
-  collect()
+  filter(code_commune_ref == "16286") %>% 
+  collect() %>% 
+  pull(unique(id_brut_bv_reu))
 
 filosofi_2019_200m <-
   aws.s3::s3read_using(
@@ -20,4 +21,14 @@ filosofi_2019_200m <-
     bucket = "thomasguinhut",
     opts = list("region" = ""),
     show_col_types = FALSE
+  )
+
+
+
+legi <-
+  aws.s3::s3read_using(
+    FUN = read_csv2,
+    object = "/resultats-definitifs-par-bureau-de-vote.csv",
+    bucket = "projet-ensai-methodo-3a",
+    opts = list("region" = "")
   )

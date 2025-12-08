@@ -37,13 +37,13 @@ cog2022_1 <-
 
 glimpse(cog2022_1)
 
-adresses_2022_reu <- arrow::open_dataset(
+adresses_2022_reu_1 <- arrow::open_dataset(
   sources = "s3://projet-ensai-methodo-3a/sources/adresses_2022_reu.parquet",
   format = "parquet",
   filesystem = "s3"
 )
 
-glimpse(adresses_2022_reu)
+glimpse(adresses_2022_reu_1)
 
 
 
@@ -205,6 +205,10 @@ setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
 
 bv_supprimes <- setdiff(bv_2022_final_2.3$ID, bv_sept2022_reu_6$ID_MIOM)
 
+bv_2022_final_2.4 <- bv_2022_final_2.3 %>% 
+  filter(!(ID %in% c(bv_supprimes, bv_prisonniers))) %>% 
+  arrange(ID)
+
 
 
 ################################################################################
@@ -229,13 +233,30 @@ bv_sept2022_reu_7 <- bv_sept2022_reu_6 %>%
     by = "ID_MIOM"
   ) %>%
   mutate(NB_ADRS = NB_ADRS + NB_ADRS_sup) %>%
-  select(-NB_ADRS_sup)
+  select(-NB_ADRS_sup) %>% 
+  arrange(ID_MIOM)
 
 length(unique(bv_sept2022_reu_7$ID_MIOM)) == nrow(bv_sept2022_reu_7)
 
-bv_2022_final_3 <- bv_2022_final_2.3
+bv_2022_final_3 <- bv_2022_final_2.4 %>%
+  inner_join(
+    bv_sept2022_reu_7 %>%
+      select(-COM),
+    by = c("ID" = "ID_MIOM")
+  ) %>%
+  dplyr::select(ID, ID_REU, ID_INSEE, BV, BV_BRUT, NB_ADRS, everything())
+
 
 glimpse(bv_2022_final_3)
+
+
+
+################################################################################
+####################### Vérifications intersection #############################
+################################################################################
+
+sum(bv_2022_final_3$ID == bv_sept2022_reu_7$ID_MIOM) == 66795
+
 
 
 ################################################################################
@@ -248,11 +269,11 @@ cog2022_2 <- cog2022_1 %>%
          !(substr(COM, 1, 2) == "97"))
 
 setdiff(bv_2022_final_3$COM, cog2022_2$COM)
-setdiff(cog2022_2$COM, bv_2022_final_3$COM) # communes_zero_habitants
-communes_zero_habitants <- setdiff(cog2022_2$COM, bv_2022_final_3$COM)
+setdiff(cog2022_2$COM, bv_2022_final_3$COM) # communes_zero_habitant
+communes_zero_habitant <- setdiff(cog2022_2$COM, bv_2022_final_3$COM)
 
 setdiff(bv_sept2022_reu_6$COM, cog2022_2$COM) # arrondissements de PLM
-setdiff(setdiff(cog2022_2$COM, bv_sept2022_reu_6$COM), communes_zero_habitants)
+setdiff(setdiff(cog2022_2$COM, bv_sept2022_reu_6$COM), communes_zero_habitant)
 # on retrouve les codes Insee de PLM + la commune de Monclart (04126) qui n'est
 # pas dans le REU de septembre 2025
 
@@ -265,13 +286,34 @@ setdiff(setdiff(cog2022_2$COM, bv_sept2022_reu_6$COM), communes_zero_habitants)
 ################################################################################
 
 
+names(adresses_2022_reu_1)
 
+length(unique((adresses_2022_reu_1 %>%
+  collect() %>% 
+  filter(id_brut_bv_reu %in% bv_sept2022_reu_7$ID_REU) %>% 
+  pull(id_brut_bv_reu)))) == 66795
+
+setdiff(bv_sept2022_reu_7$ID_REU, adresses_2022_reu_1 %>% 
+          collect() %>% 
+          pull(id_brut_bv_reu))
+
+adresses_2022_reu_2 <- adresses_2022_reu_1 %>% 
+  collect() %>% 
+  filter(id_brut_bv_reu %in% bv_2022_final_3$ID)
+
+length(unique((adresses_2022_reu_2 %>%
+                 collect() %>% 
+                 filter(id_brut_bv_reu %in% bv_sept2022_reu_7$ID_REU) %>% 
+                 pull(id_brut_bv_reu)))) == 66787
+
+adresses_2022_reu_final <- adresses_2022_reu_2
 
 
 
 ################################################################################
 ################################ Export ########################################
 ################################################################################
+
 
 aws.s3::s3write_using(
   bv_2022_final_3,
@@ -281,12 +323,13 @@ aws.s3::s3write_using(
   opts = list(region = "")
 )
 
+aws.s3::s3write_using(
+  adresses_2022_reu_final,
+  FUN = arrow::write_parquet,
+  object = "/adresses_2022_reu_final.parquet",
+  bucket = "projet-ensai-methodo-3a",
+  opts = list(region = "")
+)
+
 nouveaux_objets <- setdiff(ls(), objets_initiaux)
 rm(nouveaux_objets, list = nouveaux_objets)
-
-
-bv_2022_final_3 %>% 
-  filter(ID == (bv_sept2022_reu_7 %>% filter(ID_REU == "01001_1") %>% pull(ID_MIOM))) %>% 
-  pull(INSCRITS_T1)
-
-  

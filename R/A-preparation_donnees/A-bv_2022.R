@@ -7,7 +7,7 @@
 bv_2022_final <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "/export_bv_finaux/bv_2022_final_5.rds",
+    object = "/export_bv_finaux/bv_2022_final_6.rds",
     bucket = "projet-ensai-methodo-3a",
     opts = list("region" = "")
   )

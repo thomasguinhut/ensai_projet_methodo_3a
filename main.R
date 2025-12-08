@@ -21,4 +21,3 @@ chargement_packages(packages_requis)
 
 
 source("R/A-preparation_donnees/A-bv_2022.R")
-

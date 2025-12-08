@@ -138,7 +138,7 @@ bv_2022_final_6 <- bv_2022_final_5 %>%
       select(ID, ends_with("_2017_T1"), ends_with("_2017_T2")),
     by = "ID"
   ) %>%
-  mutate(NX_BV = as.integer(if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na)))
+  mutate(NX_BV = as.integer(if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na)), .after = BV)
 
 
 

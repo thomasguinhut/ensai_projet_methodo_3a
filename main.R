@@ -6,11 +6,14 @@
 
 # Définition des packages
 packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
-                     "data.table", "sf", "forcats", "leaflet", 
+                     "data.table", "sf", "forcats", "leaflet", "leafgl",
                      "stringr", "shiny")
 
-# Installation de pacman si nécessaire
-if (!require("pacman")) install.packages("pacman")
+# Chargement de pacman
+if (!"pacman" %in% installed.packages()) {
+  install.packages("pacman")
+}
+library(pacman)
 
 # Chargement via le vecteur
 pacman::p_load(char = packages_requis)

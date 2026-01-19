@@ -30,22 +30,16 @@ glimpse(bv_2022_final_6)
 ################################ Classif #######################################
 ################################################################################
 
-bv_2022 <- bv_2022_final_6 %>%
+bv_2022 <- bv_2022_car %>%
   dplyr::left_join(
-    bv_2022_car,
-    by = c("ID_REU" = "id_brut_bv_reu")
+    filosofi,
+    by = c("idcar_200m" = "idcar_200m")
   )
 bv_2022 <- bv_2022 %>%
   select(-c(...1))
 
 bv_2022 <- bv_2022 %>%
-  dplyr::left_join(
-    filosofi,
-    by = c("idcar_200m" = "idcar_200m")
-  )
-
-bv_2022 <- bv_2022 %>%
-  group_by(ID_REU) %>%
+  group_by(id_brut_bv_reu) %>%
   summarise(
     # Population & ménages
     Ind = sum(ind, na.rm = TRUE),
@@ -106,7 +100,7 @@ bv_2022$Cluster <- as.factor(kmeans_result$cluster)
 bv_2022_final_7 <- bv_2022_final_6 %>%
   dplyr::left_join(
     bv_2022,
-    by = c("ID_REU" = "ID_REU")
+    by = c("ID_REU" = "id_brut_bv_reu")
   )
 
 ################################################################################

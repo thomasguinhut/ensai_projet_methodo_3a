@@ -14,7 +14,7 @@ filosofi <- aws.s3::s3read_using(
   opts = list("region" = "")
 )
 
-str(filosofi)
+# str(filosofi)
 # Ind : Nombre d’individus
 # Men : Nombre de ménages
 # Men_pauv : Nombre de ménages pauvres
@@ -56,6 +56,7 @@ bv_2022 <- bv_2022 %>%
   select(-c(...1))
 
 filosofi_sans_geom <- sf::st_drop_geometry(filosofi2)
+write_parquet(filosofi_sans_geom, "filosofi_sans_geom.parquet")
 
 bv_2022 <- bv_2022 %>%
   dplyr::left_join(
@@ -184,26 +185,6 @@ stats_par_cluster <- bv_agrege %>%
 
 print(stats_par_cluster)
 
-results_anova <- list()
-for (var in variables_interet) {
-  # Effectuer le test ANOVA
-  anova_result <- aov(as.formula(paste(var, "~ Cluster")), data = bv_agrege)
-  
-  # Récupérer le summary du test
-  anova_summary <- summary(anova_result)
-  
-  # Extraire la statistique F et la p-value
-  f_value <- anova_summary[[1]]$`F value`[1]
-  p_value <- anova_summary[[1]]$`Pr(>F)`[1]
-  
-  # Stocker les résultats
-  results_anova[[var]] <- data.frame(
-    Variable = var,
-    F_value = f_value,
-    P_value = p_value
-  )
-}
-
 bv_2022 <- bv_2022 %>%
   left_join(bv_agrege %>% select(ID_REU, Cluster),
             by = c("ID_REU" = "ID_REU"))
@@ -219,13 +200,13 @@ class(bv_35)
 str(bv_35$geom)
 bv_35 <- st_as_sf(bv_35)
 
-# Representation du département avec couleur des cluster sur chaque carreaux
-ggplot(data = bv_35) +
-  geom_sf(aes(fill = as.factor(Cluster)), color = NA, size = 0.1) +
-  scale_fill_brewer(palette = "Set1", name = "Cluster") +
-  labs(title = "Carroyages du département 35 par Cluster") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+# # Representation du département avec couleur des cluster sur chaque carreaux
+# ggplot(data = bv_35) +
+#   geom_sf(aes(fill = as.factor(Cluster)), color = NA, size = 0.1) +
+#   scale_fill_brewer(palette = "Set1", name = "Cluster") +
+#   labs(title = "Carroyages du département 35 par Cluster") +
+#   theme_minimal() +
+#   theme(legend.position = "bottom")
 
 st_crs(bv_35)
 bv_35 <- st_transform(bv_35, 4326)

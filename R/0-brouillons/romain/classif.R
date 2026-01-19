@@ -80,7 +80,6 @@ bv_agrege <- bv_2022 %>%
     
     # Revenus & logement
     ind_snv = sum(ind_snv, na.rm = TRUE)/Ind,
-    men_surf = sum(men_surf, na.rm = TRUE)/Men,
     men_coll = sum(men_coll, na.rm = TRUE)/Men,
     men_mais = sum(men_mais, na.rm = TRUE)/Men,
     
@@ -89,6 +88,7 @@ bv_agrege <- bv_2022 %>%
       sum(log_70_90, na.rm = TRUE) + sum(log_ap90, na.rm = TRUE) + 
       sum(log_inc, na.rm = TRUE),
     log_soc = sum(log_soc, na.rm = TRUE)/log,
+    men_surf = sum(men_surf, na.rm = TRUE)/log,
     
     # Âges
     ind_0_3 = sum(ind_0_3, na.rm = TRUE)/Ind,

@@ -69,46 +69,46 @@ bv_agrege <- bv_2022 %>%
   group_by(ID_REU) %>%
   summarise(
     # Population & ménages
-    ind = sum(ind, na.rm = TRUE),
-    men = sum(men, na.rm = TRUE),
-    men_pauv = sum(men_pauv, na.rm = TRUE),
-    men_1ind = sum(men_1ind, na.rm = TRUE),
-    men_5ind = sum(men_5ind, na.rm = TRUE),
-    men_prop = sum(men_prop, na.rm = TRUE),
-    men_fmp = sum(men_fmp, na.rm = TRUE),
+    Ind = sum(ind, na.rm = TRUE),
+    Men = sum(men, na.rm = TRUE),
+    men_pauv = sum(men_pauv, na.rm = TRUE)/Men,
+    men_1ind = sum(men_1ind, na.rm = TRUE)/Men,
+    men_5ind = sum(men_5ind, na.rm = TRUE)/Men,
+    men_prop = sum(men_prop, na.rm = TRUE)/Men,
+    men_fmp = sum(men_fmp, na.rm = TRUE)/Men,
     
     # Revenus & logement
-    ind_snv = sum(ind_snv, na.rm = TRUE),
-    men_surf = sum(men_surf, na.rm = TRUE),
-    men_coll = sum(men_coll, na.rm = TRUE),
-    men_mais = sum(men_mais, na.rm = TRUE),
+    ind_snv = sum(ind_snv, na.rm = TRUE)/Ind,
+    men_surf = sum(men_surf, na.rm = TRUE)/Men,
+    men_coll = sum(men_coll, na.rm = TRUE)/Men,
+    men_mais = sum(men_mais, na.rm = TRUE)/Men,
     
     # Logements par période
-    log_av45 = sum(log_av45, na.rm = TRUE),
-    log_45_70 = sum(log_45_70, na.rm = TRUE),
-    log_70_90 = sum(log_70_90, na.rm = TRUE),
-    log_ap90 = sum(log_ap90, na.rm = TRUE),
-    log_inc = sum(log_inc, na.rm = TRUE),
-    log_soc = sum(log_soc, na.rm = TRUE),
+    log = sum(log_av45, na.rm = TRUE) + sum(log_45_70, na.rm = TRUE) + 
+      sum(log_70_90, na.rm = TRUE) + sum(log_ap90, na.rm = TRUE) + 
+      sum(log_inc, na.rm = TRUE),
+    log_soc = sum(log_soc, na.rm = TRUE)/log,
     
     # Âges
-    ind_0_3 = sum(ind_0_3, na.rm = TRUE),
-    ind_4_5 = sum(ind_4_5, na.rm = TRUE),
-    ind_6_10 = sum(ind_6_10, na.rm = TRUE),
-    ind_11_17 = sum(ind_11_17, na.rm = TRUE),
-    ind_18_24 = sum(ind_18_24, na.rm = TRUE),
-    ind_25_39 = sum(ind_25_39, na.rm = TRUE),
-    ind_40_54 = sum(ind_40_54, na.rm = TRUE),
-    ind_55_64 = sum(ind_55_64, na.rm = TRUE),
-    ind_65_79 = sum(ind_65_79, na.rm = TRUE),
-    ind_80p = sum(ind_80p, na.rm = TRUE),
-    ind_inc = sum(ind_inc, na.rm = TRUE),
+    ind_0_3 = sum(ind_0_3, na.rm = TRUE)/Ind,
+    ind_4_5 = sum(ind_4_5, na.rm = TRUE)/Ind,
+    ind_6_10 = sum(ind_6_10, na.rm = TRUE)/Ind,
+    ind_11_17 = sum(ind_11_17, na.rm = TRUE)/Ind,
+    ind_18_24 = sum(ind_18_24, na.rm = TRUE)/Ind,
+    ind_25_39 = sum(ind_25_39, na.rm = TRUE)/Ind,
+    ind_40_54 = sum(ind_40_54, na.rm = TRUE)/Ind,
+    ind_55_64 = sum(ind_55_64, na.rm = TRUE)/Ind,
+    ind_65_79 = sum(ind_65_79, na.rm = TRUE)/Ind,
+    ind_80p = sum(ind_80p, na.rm = TRUE)/Ind,
+    ind_inc = sum(ind_inc, na.rm = TRUE)/Ind,
     
     .groups = "drop"
   )
 
 df_quant <- bv_agrege %>%
   select(where(is.numeric))
+df_quant <- df_quant %>%
+  select(-c(Ind, Men))
 
 data_scaled <- scale(df_quant)
 
@@ -131,13 +131,19 @@ fviz_pca_ind(res.acp, axes = c(1, 2),
 fviz_pca_var(res.acp, axes = c(1, 2),
              col.var = "contrib",
              title = "ACP : Cercle des corrélations")
+fviz_pca_var(res.acp, axes = c(1, 3),
+             col.var = "contrib",
+             title = "ACP : Cercle des corrélations")
+fviz_pca_var(res.acp, axes = c(2, 3),
+             col.var = "contrib",
+             title = "ACP : Cercle des corrélations")
 
 fviz_contrib(res.acp, choice = "var", axes = 1, top = 10)
-# Nombre d'indiv 5%, Nombre de ménages, Nombre d’individus de 40 à 54 ans
-# Nombre d’individus de 18 à 24 ans, Nombre d’individus de 55 à 64 ans ... 
+# type de ménage (propriétaire, collectif, sociaux...) 
 fviz_contrib(res.acp, choice = "var", axes = 2, top = 10)
-# Nombre de nénage en maison 25%, Nombre de ménages propriétaires 14%, 
-# Nombre de logements sociaux 13%
+# age
+fviz_contrib(res.acp, choice = "var", axes = 3, top = 10)
+# niveau de vie
 
 inertie <- sapply(1:10, function(k) {
   kmeans_result <- kmeans(coord_acp, centers = k, nstart = 25)
@@ -158,6 +164,12 @@ fviz_cluster(kmeans_result, data = coord_acp,
              geom = "point",
              ellipse.type = "convex",
              title = "Clusters (K-means) sur les coordonnées ACP")
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(1,3))
+
 
 bv_agrege$Cluster <- as.factor(kmeans_result$cluster)
 

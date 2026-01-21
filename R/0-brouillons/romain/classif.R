@@ -224,3 +224,98 @@ leaflet(data = bv_35) %>%
             pal = palette,
             values = as.factor(bv_35$Cluster),
             title = "Cluster")
+
+#### Classif 2 
+bv_modif <- bv_2022_final %>%
+  mutate(DUPONTAIGNAN_2017_T1_part = DUPONTAIGNAN_2017_T1/EXPRIMES_2017_T1,
+         LEPEN_2017_T1_part = LEPEN_2017_T1/EXPRIMES_2017_T1,
+         MACRON_2017_T1_part = MACRON_2017_T1/EXPRIMES_2017_T1,
+         HAMON_2017_T1_part = HAMON_2017_T1/EXPRIMES_2017_T1,
+         ARTHAUD_2017_T1_part = ARTHAUD_2017_T1/EXPRIMES_2017_T1, 
+         POUTOU_2017_T1_part = POUTOU_2017_T1/EXPRIMES_2017_T1, 
+         CHEMINADE_2017_T1_part = CHEMINADE_2017_T1/EXPRIMES_2017_T1,
+         LASSALLE_2017_T1_part = LASSALLE_2017_T1/EXPRIMES_2017_T1, 
+         MÉLENCHON_2017_T1_part = MÉLENCHON_2017_T1/EXPRIMES_2017_T1, 
+         ASSELINEAU_2017_T1_part = ASSELINEAU_2017_T1/EXPRIMES_2017_T1, 
+         FILLON_2017_T1_part = FILLON_2017_T1/EXPRIMES_2017_T1)
+var_select <- bv_modif %>%
+  select(c(men_pauv, men_1ind, men_5ind, men_prop, men_fmp, ind_snv, men_coll,
+           men_mais, log_soc, ind_0_3, ind_4_5, ind_6_10, ind_11_17, ind_18_24,
+           ind_25_39, ind_40_54, ind_55_64, ind_65_79, ind_80p,ind_inc, 
+           DUPONTAIGNAN_2017_T1_part, LEPEN_2017_T1_part, MACRON_2017_T1_part, 
+           HAMON_2017_T1_part, ARTHAUD_2017_T1_part, POUTOU_2017_T1_part,  
+           CHEMINADE_2017_T1_part, LASSALLE_2017_T1_part, 
+           MÉLENCHON_2017_T1_part, ASSELINEAU_2017_T1_part, FILLON_2017_T1_part))
+           
+
+data_scaled <- scale(var_select)
+
+# ACP
+res.acp <- PCA(data_scaled, scale.unit = TRUE, ncp = 10, graph = FALSE)
+
+fviz_eig(res.acp, addlines = TRUE, ylim = c(0, 100))
+k <- 4
+res.acp$eig
+coord_acp <- res.acp$ind$coord[, 1:k] 
+
+fviz_pca_ind(res.acp, axes = c(1, 2),
+             addEllipses = TRUE,
+             title = "ACP : Projection des individus")
+fviz_pca_var(res.acp, axes = c(3, 4),
+             col.var = "contrib",
+             title = "ACP : Cercle des corrélations")
+fviz_contrib(res.acp, choice = "var", axes = 1, top = 10)
+# type de ménage (propriétaire, collectif, sociaux...) 
+fviz_contrib(res.acp, choice = "var", axes = 2, top = 10)
+# menage à un seul individu, age
+fviz_contrib(res.acp, choice = "var", axes = 3, top = 10)
+# niveau de vie et résultats aux élections 
+fviz_contrib(res.acp, choice = "var", axes = 4, top = 10)
+# Résultats au élection 
+
+inertie <- sapply(1:10, function(k) {
+  kmeans_result <- kmeans(coord_acp, centers = k, nstart = 25)
+  kmeans_result$tot.withinss
+})
+
+# Tracer la courbe du coude
+plot(1:10, inertie, type = "b", pch = 19,
+     xlab = "Nombre de clusters (k)",
+     ylab = "Inertie (variance intra-cluster)",
+     main = "Méthode du coude")
+
+set.seed(123)
+kmeans_result <- kmeans(coord_acp, centers = 4, nstart = 25)
+
+# Visualiser les clusters
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP")
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(1,3))
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(1,4))
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(2,3))
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(2,4))
+fviz_cluster(kmeans_result, data = coord_acp,
+             geom = "point",
+             ellipse.type = "convex",
+             title = "Clusters (K-means) sur les coordonnées ACP",
+             axes = c(3,4))
+
+

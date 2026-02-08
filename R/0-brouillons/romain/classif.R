@@ -319,3 +319,23 @@ fviz_cluster(kmeans_result, data = coord_acp,
              axes = c(3,4))
 
 
+
+if (!require("plotly")) install.packages("plotly")
+library(plotly)
+
+df_4d <- data.frame(
+  PC1 = coord_acp[, 1],
+  PC2 = coord_acp[, 2],
+  PC3 = coord_acp[, 3],
+  PC4 = coord_acp[, 4],
+  Cluster = as.factor(kmeans_result$cluster)
+)
+
+# Exemple pour PC1, PC2, PC3
+plot_ly(df_4d, x = ~PC1, y = ~PC2, z = ~PC4,
+        color = ~Cluster, colors = c("red", "blue", "green", "orange"),
+        type = "scatter3d", mode = "markers",
+        title = "Clusters en 3D (PC1, PC2, PC4)", 
+        marker = list(size = 5))
+
+

@@ -4,11 +4,13 @@
 # source("R/A-preparation_donnees/A4-bv_2022_fermetures.R")
 # source("R/A-preparation_donnees/A5-communes_2022_grille_densite.R")
 # source("R/A-preparation_donnees/A6-resultats_prez2017.R")
+# source("R/A-preparation_donnees/A7b-appariement_cluster.R")
+# source("R/A-preparation_donnees/A8-clustering.R")
 
 bv_2022_final <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "/export_bv_finaux/bv_2022_final_7.rds",
+    object = "/export_bv_finaux/bv_2022_final_8.rds",
     bucket = "projet-ensai-methodo-3a",
     opts = list("region" = "")
   )

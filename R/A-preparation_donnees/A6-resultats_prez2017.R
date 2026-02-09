@@ -32,7 +32,7 @@ glimpse(resultats_bv_2017_t2_1)
 bv_2022_final_5 <-
   aws.s3::s3read_using(
     FUN = readRDS,
-    object = "/export_bv_finaux/bv_2022_final_4.rds",
+    object = "/export_bv_finaux/bv_2022_final_5.rds",
     bucket = "projet-ensai-methodo-3a",
     opts = list("region" = "")
   )

@@ -1,9 +1,19 @@
-# Appariement entre les carreaux Filosofi (200m) et les bv
+################################################################################
+############################ Importation des données ###########################
+################################################################################
 
-# Executer le main :
-source("main.R")
 
-# Import des bases de données : 
+objets_initiaux <- ls()
+
+bv_2022_final_6 <-
+  aws.s3::s3read_using(
+    FUN = readRDS,
+    object = "/export_bv_finaux/bv_2022_final_6.rds",
+    bucket = "projet-ensai-methodo-3a",
+    opts = list("region" = "")
+  )
+
+glimpse(bv_2022_final_6)
 
 gp <- 
   aws.s3::s3read_using(
@@ -55,5 +65,20 @@ bv_par_carreau <- counts[, .SD[1], by = idcar_200m]
 # on ne garde que le bv avec le plus grand N par carreau
 # correspond au nombre d'adresses du carreaux associées au bv en question
 
-# Sauvegarde du fichier :
-# write.csv2(bv_par_carreau, file = "carreau_appariement_bv3.csv")
+
+
+################################################################################
+################################ Export ########################################
+################################################################################
+
+
+aws.s3::s3write_using(
+  bv_par_carreau,
+  FUN = readr::write_csv,
+  object = "/appariement_carreaux_filosofi/carreau_appariement_bv3.csv",
+  bucket = "projet-ensai-methodo-3a",
+  opts = list(region = "")
+)
+
+nouveaux_objets <- setdiff(ls(), objets_initiaux)
+rm(nouveaux_objets, list = nouveaux_objets)

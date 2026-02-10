@@ -68,14 +68,14 @@ resultats_bv_2017_t1_2 <- resultats_bv_2017_t1_1 %>%
          POUTOU_2017_T1 = V61,
          CHEMINADE_2017_T1 = V68,
          LASSALLE_2017_T1 = V75,
-         MÉLENCHON_2017_T1 = V82,
+         MELENCHON_2017_T1 = V82,
          ASSELINEAU_2017_T1 = V89,
          FILLON_2017_T1 = V96,
          COM_LIB = `Libellé de la commune`) %>% 
   dplyr::select(ID, DEP, COM, COM_LIB, BV, INSCRITS_2017_T1, VOTANTS_2017_T1,
                 EXPRIMES_2017_T1, DUPONTAIGNAN_2017_T1, LEPEN_2017_T1, MACRON_2017_T1,
                 HAMON_2017_T1, ARTHAUD_2017_T1, POUTOU_2017_T1, CHEMINADE_2017_T1,
-                LASSALLE_2017_T1, MÉLENCHON_2017_T1, ASSELINEAU_2017_T1,
+                LASSALLE_2017_T1, MELENCHON_2017_T1, ASSELINEAU_2017_T1,
                 FILLON_2017_T1) %>% 
   filter(!(DEP %in% c("ZA", "ZB", "ZC", "ZD", "ZM", "ZN", "ZP", "ZS", "ZW",
                       "ZX", "ZZ")))
@@ -138,8 +138,17 @@ bv_2022_final_6 <- bv_2022_final_5 %>%
       select(ID, ends_with("_2017_T1"), ends_with("_2017_T2")),
     by = "ID"
   ) %>%
-  mutate(NX_BV = as.integer(if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na)), .after = BV)
+  mutate(
+    across(
+      ends_with("2017_T1"),
+      ~ round((.x / INSCRITS_2017_T1) * 100, 1), 
+      .names = "PROP_{.col}"
+    ),
+    NX_BV = as.integer(if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na))
+  ) %>% 
+  dplyr::select(-c("PROP_INSCRITS_2017_T1", "PROP_VOTANTS_2017_T1"))
 
+glimpse(bv_2022_final_6)
 
 
 ################################################################################

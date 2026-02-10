@@ -3,25 +3,21 @@
 ################################################################################
 
 
-
-# Définition des packages
 packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
                      "data.table", "sf", "forcats", "leaflet", "leafgl",
                      "stringr", "shiny", "FactoMineR", "factoextra", "stats", 
                      "lwgeom", "viridis", "RColorBrewer", "ggtext", "ggrepel",
-                     "gtsummary")
+                     "gtsummary", "sampling", "survey", "fastcluster",
+                     "gtsummary", "purrr")
 
-# Chargement de pacman
 if (!"pacman" %in% installed.packages()) {
   install.packages("pacman")
 }
 library(pacman)
 
-# Chargement via le vecteur
 pacman::p_load(char = packages_requis)
 
 rm(packages_requis)
-
 
 
 
@@ -32,3 +28,4 @@ rm(packages_requis)
 
 source("R/A-preparation_donnees/A-bv_2022.R")
 
+glimpse(bv_2022_final)

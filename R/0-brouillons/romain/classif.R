@@ -226,6 +226,7 @@ leaflet(data = bv_35) %>%
             title = "Cluster")
 
 #### Classif 2 
+glimpse(bv_2022_final)
 bv_modif <- bv_2022_final %>%
   mutate(DUPONTAIGNAN_2017_T1_part = DUPONTAIGNAN_2017_T1/EXPRIMES_2017_T1,
          LEPEN_2017_T1_part = LEPEN_2017_T1/EXPRIMES_2017_T1,
@@ -239,13 +240,13 @@ bv_modif <- bv_2022_final %>%
          ASSELINEAU_2017_T1_part = ASSELINEAU_2017_T1/EXPRIMES_2017_T1, 
          FILLON_2017_T1_part = FILLON_2017_T1/EXPRIMES_2017_T1)
 var_select <- bv_modif %>%
-  select(c(men_pauv, men_1ind, men_5ind, men_prop, men_fmp, ind_snv, men_coll,
-           men_mais, log_soc, ind_0_3, ind_4_5, ind_6_10, ind_11_17, ind_18_24,
-           ind_25_39, ind_40_54, ind_55_64, ind_65_79, ind_80p,ind_inc, 
+  select(c(starts_with(c('IND', 'MEN', 'LOG')),
            DUPONTAIGNAN_2017_T1_part, LEPEN_2017_T1_part, MACRON_2017_T1_part, 
            HAMON_2017_T1_part, ARTHAUD_2017_T1_part, POUTOU_2017_T1_part,  
            CHEMINADE_2017_T1_part, LASSALLE_2017_T1_part, 
            MÉLENCHON_2017_T1_part, ASSELINEAU_2017_T1_part, FILLON_2017_T1_part))
+var_select <- var_select %>%
+  select(-c(IND, MEN))
            
 
 data_scaled <- scale(var_select)
@@ -253,7 +254,7 @@ data_scaled <- scale(var_select)
 # ACP
 res.acp <- PCA(data_scaled, scale.unit = TRUE, ncp = 10, graph = FALSE)
 
-fviz_eig(res.acp, addlines = TRUE, ylim = c(0, 100))
+fviz_eig(res.acp, addlines = TRUE, ylim = c(0, 30))
 k <- 4
 res.acp$eig
 coord_acp <- res.acp$ind$coord[, 1:k] 
@@ -261,7 +262,7 @@ coord_acp <- res.acp$ind$coord[, 1:k]
 fviz_pca_ind(res.acp, axes = c(1, 2),
              addEllipses = TRUE,
              title = "ACP : Projection des individus")
-fviz_pca_var(res.acp, axes = c(3, 4),
+fviz_pca_var(res.acp, axes = c(1, 2),
              col.var = "contrib",
              title = "ACP : Cercle des corrélations")
 fviz_contrib(res.acp, choice = "var", axes = 1, top = 10)

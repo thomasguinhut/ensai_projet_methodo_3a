@@ -50,7 +50,7 @@ fviz_pca_var(res.acp, axes = c(1,3), repel = TRUE)
 
 res.mfa <- MFA(
   bdd_acp,
-  group = c(19,14,3),
+  group = c(19,12,3),
   type = rep("s", 3),
   ncp = 10,
   name.group = c("Filosofi", "Présidentielle 2017", "Rural/urbain"),

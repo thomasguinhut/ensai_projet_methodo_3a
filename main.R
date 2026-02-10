@@ -20,6 +20,8 @@ library(pacman)
 # Chargement via le vecteur
 pacman::p_load(char = packages_requis)
 
+rm(packages_requis)
+
 
 
 

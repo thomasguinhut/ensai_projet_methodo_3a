@@ -51,8 +51,8 @@ bv_2022_2 <- bv_2022_1 %>%
   group_by(id_brut_bv_reu) %>%
   summarise(
     # Population & ménages
-    IND = as.integer(sum(ind, na.rm = TRUE)),
-    MEN = as.integer(sum(men, na.rm = TRUE)),
+    IND = max(1L, as.integer(sum(ind, na.rm = TRUE))),
+    MEN = max(1L, as.integer(sum(men, na.rm = TRUE))),
     MEN_PAUV = round(sum(men_pauv, na.rm = TRUE) / MEN * 100, 1),
     MEN_1IND = round(sum(men_1ind, na.rm = TRUE) / MEN * 100, 1),
     MEN_5IND = round(sum(men_5ind, na.rm = TRUE) / MEN * 100, 1),
@@ -60,16 +60,21 @@ bv_2022_2 <- bv_2022_1 %>%
     MEN_FMP  = round(sum(men_fmp,  na.rm = TRUE) / MEN * 100, 1),
     
     # Revenus & logement
-    IND_SNV  = round(sum(ind_snv,  na.rm = TRUE) / IND * 100, 1),
+    MEN_NV  = round(sum(ind_snv,  na.rm = TRUE) / IND, 1),
     MEN_COLL = round(sum(men_coll, na.rm = TRUE) / MEN * 100, 1),
     MEN_MAIS = round(sum(men_mais, na.rm = TRUE) / MEN * 100, 1),
     
     # Logements par période
-    LOG = as.integer(sum(log_av45, na.rm = TRUE) +
-      sum(log_45_70, na.rm = TRUE) +
-      sum(log_70_90, na.rm = TRUE) +
-      sum(log_ap90, na.rm = TRUE) +
-      sum(log_inc,   na.rm = TRUE)),
+    LOG = max(
+      1L,
+      as.integer(
+        sum(log_av45, na.rm = TRUE) +
+          sum(log_45_70, na.rm = TRUE) +
+          sum(log_70_90, na.rm = TRUE) +
+          sum(log_ap90, na.rm = TRUE) +
+          sum(log_inc,   na.rm = TRUE)
+      )
+    ),
     LOG_SOC  = round(sum(log_soc,  na.rm = TRUE) / LOG * 100, 1),
     MEN_SURF = round(sum(men_surf, na.rm = TRUE) / LOG, 1),
     

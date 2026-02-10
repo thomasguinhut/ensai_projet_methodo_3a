@@ -65,6 +65,8 @@ bv_par_carreau <- counts[, .SD[1], by = idcar_200m]
 # on ne garde que le bv avec le plus grand N par carreau
 # correspond au nombre d'adresses du carreaux associées au bv en question
 
+############# travail de Romain à ajouter 
+
 
 
 ################################################################################

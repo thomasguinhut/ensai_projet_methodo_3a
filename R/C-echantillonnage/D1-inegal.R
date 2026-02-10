@@ -1,3 +1,7 @@
+objets_initiaux <- ls()
+
+source("R/C-echantillonnage/D0-creer_base_bulletins.R")
+
 tirage_inegal <- function(base, nb_bv_tires, nb_bulletins_tires, autopondere, tour) {
   
   # base <- bv_2022_final
@@ -5,6 +9,9 @@ tirage_inegal <- function(base, nb_bv_tires, nb_bulletins_tires, autopondere, to
   # nb_bulletins_tires <- 100
   # autopondere <- TRUE
   # tour <- "T1"
+  
+  base <- base %>% 
+    filter(TIRABLE)
   
   variable_nbr_inscrits <- paste0("INSCRITS_", tour)
   variable_nbr_exprimes <- paste0("EXPRIMES_", tour)
@@ -53,7 +60,7 @@ tirage_inegal <- function(base, nb_bv_tires, nb_bulletins_tires, autopondere, to
   
 }
 
-ech_inegal <- tirage_inegal(bv_2022_final, 500, 100, TRUE, "T1")
+ech_inegal <- tirage_inegal(bv_2022_final, 500, 100, FALSE, "T1")
 
 hist(ech_inegal$poids)
 
@@ -62,4 +69,14 @@ design_inegal <- svydesign(data = ech_inegal,
                            fpc = ~proba_inegal_d1,
                            weights = ~poids)
 
-svymean(design = design_inegal, ~MACRON)
+svymean(design = design_inegal, ~I(MACRON*100))
+round(sum(bv_2022_final$MACRON_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
+
+svymean(design = design_inegal, ~I(LEPEN*100))
+round(sum(bv_2022_final$LEPEN_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
+
+svymean(design = design_inegal, ~I(MELENCHON*100))
+round(sum(bv_2022_final$MELENCHON_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
+
+nouveaux_objets <- setdiff(ls(), objets_initiaux)
+rm(nouveaux_objets, list = nouveaux_objets)

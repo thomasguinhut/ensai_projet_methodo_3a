@@ -1,14 +1,15 @@
-tirage_stratifie <- function(base_sondage, n) {
+tirage_stratifie <- function(nb_bv_tires, nb_max_bulletins_tires, tour = "T1") {
+  
   # Calculer le nombre d'observations par strate
   Nh <- base_sondage %>%
     group_by(CLUSTER_AFM_DENSITE_FILOSOFI) %>%
     summarise(Nh = n())
   
   # Allouer proportionnellement le nombre d'observations à tirer par strate
-  Nh$alloc <- round(Nh$Nh * n / nrow(base_sondage))
+  Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(base_sondage))
   
   # Ajustement pour que la somme des allocations soit égale à n
-  difference <- n - sum(Nh$alloc)
+  difference <- nb_bv_tires - sum(Nh$alloc)
   if (difference != 0) {
     Nh$alloc[which.max(Nh$alloc)] <- Nh$alloc[which.max(Nh$alloc)] + difference
   }
@@ -40,13 +41,14 @@ tirage_stratifie <- function(base_sondage, n) {
   base_sondage <- base_sondage %>%
     left_join(somme_par_groupe, by = "CLUSTER_AFM_DENSITE_FILOSOFI")
   
-  base_sondage$proba_StratificationFilosofi_d1 <- base_sondage$EXPRIMES_T1 / base_sondage$somme_EXPRIMES_T1
+  base_sondage$proba_stratfilosofi_d1 <- base_sondage$EXPRIMES_T1 / base_sondage$somme_EXPRIMES_T1
   
   return(tirage_bulletins(base_sondage = base_sondage, 
                           indic_d1 = vecteur,
                           tour = "T1",
-                          methode = "StratificationFilosofi",
-                          nb_max_bulletins_tires = 100))
+                          methode = "stratfilosofi",
+                          nb_max_bulletins_tires = nb_max_bulletins_tires))
+
 }
 
 

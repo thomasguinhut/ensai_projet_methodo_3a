@@ -115,14 +115,24 @@ bv_2022_2 <- bv_2022_1 %>%
     PROP_IND_80P = round(IND_80P / IND_AGE_CONNU * 100, 1),
     
     .groups = "drop"
-  ) %>% 
+  ) %>%
+  filter(IND_AGE_CONNU != 0,
+         LOG != 0,
+         MEN != 0,
+         IND != 0) %>% 
   dplyr::select(-IND_AGE_CONNU)
 
+length(setdiff(bv_2022_2$id_brut_bv_reu, bv_2022_final_6$ID_REU))
+length(setdiff(bv_2022_final_6$ID_REU, bv_2022_2$id_brut_bv_reu))
+
 bv_2022_3 <- bv_2022_final_6 %>%
-  dplyr::left_join(
+  inner_join(
     bv_2022_2,
     by = c("ID_REU" = "id_brut_bv_reu")
   )
+
+bv_2022_4 <- bv_2022_3 %>% 
+  filter(EXPRIMES_T1 != 0 & EXPRIMES_T2 != 0)
 
 
 
@@ -132,7 +142,7 @@ bv_2022_3 <- bv_2022_final_6 %>%
 
 
 aws.s3::s3write_using(
-  bv_2022_3,
+  bv_2022_4,
   FUN = function(data, file) saveRDS(data, file = file),
   object = "/export_bv_finaux/bv_2022_final_7.rds",
   bucket = "projet-ensai-methodo-3a",

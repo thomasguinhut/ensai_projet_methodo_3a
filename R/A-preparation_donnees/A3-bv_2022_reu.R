@@ -69,7 +69,7 @@ bv_sept2022_reu_2 <- bv_sept2022_reu_1 %>%
 
 
 ################################################################################
-##### Etude de la correspondance entre bv_sept2022_reu etbv_2022_final_2 #######
+##### Etude de la correspondance entre bv_sept2022_reu et bv_2022_final_2 ######
 ################################################################################
 
 

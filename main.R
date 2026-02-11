@@ -34,8 +34,7 @@ source("R/D-estimations/D0-import_fonctions.R")
 source("R/Z-autres_fonctions/D0-import_fonctions.R")
 
 base_sondage <- bv_2022_final %>% 
-  filter(TIRABLE,
-         INSCRITS_T1 > 99)
+  filter(TIRABLE)
 
 
 
@@ -44,7 +43,7 @@ base_sondage <- bv_2022_final %>%
 ################################################################################
 
 
-ech_inegal_t1 <- tirage_inegal(500, 100, FALSE, "T1")
+ech_inegal_t1 <- tirage_inegal(2000, 200, FALSE, "T1")
 estimation_flash(ech_inegal_t1, "MACRON", "inegal", "T1")
 estimation_flash(ech_inegal_t1, "LEPEN", "inegal", "T1")
 
@@ -54,11 +53,12 @@ estimation_flash(ech_cube_t1, "LEPEN", "cube", "T1")
 estimation_flash(ech_cube_t1, "MELENCHON", "cube", "T1")
 estimation_flash(ech_cube_t1, "ZEMMOUR", "cube", "T1")
 
-ech_strat_t1 <- tirage_stratifie(base_sondage, 500)
-estimation_flash(ech_strat_t1, "MACRON", "StratificationFilosofi", "T1")
-estimation_flash(ech_strat_t1, "LEPEN", "StratificationFilosofi", "T1")
-estimation_flash(ech_strat_t1, "MELENCHON", "StratificationFilosofi", "T1")
-estimation_flash(ech_strat_t1, "ZEMMOUR", "StratificationFilosofi", "T1")
+ech_strat_t1 <- tirage_stratifie(500, 100, "T1")
+estimation_flash(ech_strat_t1, "MACRON", "stratfilosofi", "T1")
+estimation_flash(ech_strat_t1, "LEPEN", "stratfilosofi", "T1")
+estimation_flash(ech_strat_t1, "MELENCHON", "stratfilosofi", "T1")
+estimation_flash(ech_strat_t1, "ZEMMOUR", "stratfilosofi", "T1")
+
 
 
 ################################################################################

@@ -46,4 +46,19 @@ base_sondage <- bv_2022_final %>%
 
 ech_inegal_t1 <- tirage_inegal(500, 100, FALSE, "T1")
 estimation_flash(ech_inegal_t1, "MACRON", "inegal", "T1")
-estimation_flash(ech_inegal_t1, "MACRON", "inegal")
+estimation_flash(ech_inegal_t1, "LEPEN", "inegal", "T1")
+
+ech_cube_t1 <- tirage_cube(500, 100, FALSE, "T1")
+estimation_flash(ech_cube_t1, "MACRON", "cube", "T1")
+estimation_flash(ech_cube_t1, "LEPEN", "cube", "T1")
+estimation_flash(ech_cube_t1, "MELENCHON", "cube", "T1")
+estimation_flash(ech_cube_t1, "ZEMMOUR", "cube", "T1")
+
+
+
+################################################################################
+############################ ESTIMATIONS MONTE-CARLO ###########################
+################################################################################
+
+
+

@@ -1,5 +1,5 @@
-tirage_inegal <- function(nb_bv_tires, nb_maxe_bulletins_tires,
-                          autopondere, tour) {
+tirage_inegal <- function(nb_bv_tires, nb_max_bulletins_tires,
+                          autopondere, tour = "T1") {
   
   # nb_bv_tires <- 500
   # nb_bulletins_tires <- 100
@@ -9,7 +9,7 @@ tirage_inegal <- function(nb_bv_tires, nb_maxe_bulletins_tires,
   if(autopondere) {
     base_sondage <- base_sondage %>% 
       filter(
-        base_sondage[[paste0("EXPRIMES_", tour)]] >= paste0("EXPRIMES_", tour)
+        base_sondage[[paste0("EXPRIMES_", tour)]] >= nb_max_bulletins_tires
       )
   }
   
@@ -22,6 +22,6 @@ tirage_inegal <- function(nb_bv_tires, nb_maxe_bulletins_tires,
   
   return(tirage_bulletins(base_sondage, indic_d1, tour,
                           ifelse(autopondere, "inegal_autopond", "inegal"),
-                          nb_maxe_bulletins_tires))
+                          nb_max_bulletins_tires))
   
 }

@@ -160,8 +160,9 @@ bdd_cluster <- bdd_cluster_afm_densite_filosofi %>%
 
 bv_2022_final_8 <- bv_2022_final_7 %>% 
   left_join(bdd_cluster, by = "ID") %>% 
-  mutate(TIRABLE = !is.na(CLUSTER_AFM_DENSITE_FILOSOFI),
-         )
+  mutate(TIRABLE = ifelse(
+    !(is.na(CLUSTER_AFM_DENSITE_FILOSOFI)) & EXPRIMES_T1 != 0 & EXPRIMES_T2 != 0,
+    TRUE, FALSE))
 
 colSums(is.na(bv_2022_final_8))
 

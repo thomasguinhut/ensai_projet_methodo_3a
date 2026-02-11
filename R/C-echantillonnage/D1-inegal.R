@@ -1,8 +1,7 @@
 objets_initiaux <- ls()
 
-source("R/C-echantillonnage/D0-creer_base_bulletins.R")
-
-tirage_inegal <- function(base, nb_bv_tires, nb_bulletins_tires, autopondere, tour) {
+tirage_inegal <- function(base_sondage, nb_bv_tires, nb_maxe_bulletins_tires,
+                          autopondere, tour) {
   
   # base <- bv_2022_final
   # nb_bv_tires <- 500
@@ -10,64 +9,32 @@ tirage_inegal <- function(base, nb_bv_tires, nb_bulletins_tires, autopondere, to
   # autopondere <- TRUE
   # tour <- "T1"
   
-  base <- base %>% 
-    filter(TIRABLE)
-  
-  variable_nbr_inscrits <- paste0("INSCRITS_", tour)
-  variable_nbr_exprimes <- paste0("EXPRIMES_", tour)
-  
   if(autopondere) {
-    
-    base <- base %>% 
-      filter(base[[variable_nbr_exprimes]] >= nb_bulletins_tires)
-    
+    base_sondage <- base_sondage %>% 
+      filter(
+        base_sondage[[paste0("EXPRIMES_", tour)]] >= paste0("EXPRIMES_", tour)
+      )
   }
   
-  base$proba_inegal_d1 <- 
+  base_sondage$proba_inegal_d1 <- 
     sampling::inclusionprobabilities(
-      base[[variable_nbr_inscrits]],
+      base_sondage[[paste0("INSCRITS_", tour)]],
       n = nb_bv_tires)
   
-  indic_d1 <- sampling::UPsystematic(base$proba_inegal_d1)
+  indic_d1 <- sampling::UPsystematic(base_sondage$proba_inegal_d1)
   
-  ech_bv <- getdata(base, indic_d1)
-  
-  bds_individus <- creer_base_bulletins(ech_bv, tour = "T1")
-  
-  nbr_bulletins_tires <- ifelse(ech_bv[[variable_nbr_exprimes]] < nb_bulletins_tires,
-                                ech_bv[[variable_nbr_exprimes]],
-                                nb_bulletins_tires)
-  
-  indic_2d <- sampling::strata(data = bds_individus,
-                               stratanames = "ID",
-                               size = nbr_bulletins_tires,
-                               method = "srswor")
-  
-  ech_bulletins <- getdata(bds_individus, indic_2d)
-  
-  names(ech_bulletins)[names(ech_bulletins) == "Prob"] <- "proba_inegal_d2"
-  
-  ech_bulletins <- merge(ech_bulletins,
-                         base[, c("ID", "proba_inegal_d1")],
-                             by = "ID",
-                             all.x = T,
-                             all.y = F)
-  
-  ech_bulletins$poids <-
-    with(ech_bulletins, 1 / (proba_inegal_d1 * proba_inegal_d2))
-  
-  return(ech_bulletins)
+  return(tirage_bulletins(base_sondage, indic_d1, tour,
+                          ifelse(autopondere, "inegal_autopond", "inegal"),
+                          nb_maxe_bulletins_tires))
   
 }
 
 ech_inegal <- tirage_inegal(bv_2022_final, 500, 100, FALSE, "T1")
 
-hist(ech_inegal$poids)
-
 design_inegal <- svydesign(data = ech_inegal,
                            id = ~ID,
                            fpc = ~proba_inegal_d1,
-                           weights = ~poids)
+                           weights = ~poids_inegal)
 
 svymean(design = design_inegal, ~I(MACRON*100))
 round(sum(bv_2022_final$MACRON_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)

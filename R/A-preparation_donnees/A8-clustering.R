@@ -31,8 +31,8 @@ bdd_facto <- bv_2022_final_7 %>%
   dplyr::select(
     "ID",
     starts_with("DENS3_P"),
-    starts_with(c("IND", "MEN", "LOG")),
-    -c("IND", "MEN", "LOG", "IND_INC"),
+    starts_with(c("PROP_IND", "PROP_MEN", "PROP_LOG", "MOY")),
+    -c("IND", "MEN", "LOG"),
     starts_with("PROP") & ends_with("2017_T1")
   ) %>% 
   as.data.frame()
@@ -52,7 +52,8 @@ glimpse(bdd_facto)
 colnames(bdd_facto)
 
 res.mfa_densite_filosofi <- MFA(
-  bdd_facto %>% dplyr::select(starts_with(c("DENS3_P", "IND", "MEN", "LOG"))),
+  bdd_facto %>% dplyr::select(starts_with(c("DENS3_P", "PROP_IND",
+                                            "PROP_MEN", "PROP_LOG", "MOY"))),
   group = c(3, 20),
   type = rep("s", 2),
   ncp = 10,
@@ -60,45 +61,7 @@ res.mfa_densite_filosofi <- MFA(
   graph = FALSE
 )
 
-res.mfa_densite_filosofi$eig %>%
-  as.data.frame() %>%
-  mutate(
-    PC = row_number(),
-    var = `percentage of variance`,
-    cum = `cumulative percentage of variance`,
-    cum_scaled = cum / max(cum) * max(var)
-  ) %>%
-  ggplot(aes(x = PC)) +
-  geom_col(aes(y = var),
-           fill = "steelblue") +
-  geom_text(
-    aes(y = var, label = round(var, 0)),
-    vjust = -0.5,
-    color = "steelblue",
-    size = 3
-  ) +
-  geom_line(aes(y = cum_scaled),
-            color = "red") +
-  geom_point(aes(y = cum_scaled),
-             color = "red") +
-  geom_text(
-    aes(y = cum_scaled, label = round(cum, 0)),
-    vjust = -0.8,
-    color = "red",
-    size = 3
-  ) +
-  scale_y_continuous(
-    name = "Percentage of variances\n",
-    sec.axis = sec_axis(
-      ~ . * max(res.mfa_densite_filosofi$eig[,3]) / max(res.mfa_densite_filosofi$eig[,2]),
-      name = "Cumulative percentage of variances\n"
-    )
-  ) +
-  labs(
-    title = "Variances explained\n",
-    x = "\nPrincipal Components"
-  ) +
-  theme_minimal()
+plot_variances_dimensions(res.mfa_densite_filosofi)
 
 fviz_mfa_axes(res.mfa_densite_filosofi,
               repel = TRUE,
@@ -139,45 +102,7 @@ res.mfa_densite_filosofi_2017 <- MFA(
   graph = FALSE
 )
 
-res.mfa_densite_filosofi_2017$eig %>%
-  as.data.frame() %>%
-  mutate(
-    PC = row_number(),
-    var = `percentage of variance`,
-    cum = `cumulative percentage of variance`,
-    cum_scaled = cum / max(cum) * max(var)
-  ) %>%
-  ggplot(aes(x = PC)) +
-  geom_col(aes(y = var),
-           fill = "steelblue") +
-  geom_text(
-    aes(y = var, label = round(var, 0)),
-    vjust = -0.5,
-    color = "steelblue",
-    size = 3
-  ) +
-  geom_line(aes(y = cum_scaled),
-            color = "red") +
-  geom_point(aes(y = cum_scaled),
-             color = "red") +
-  geom_text(
-    aes(y = cum_scaled, label = round(cum, 0)),
-    vjust = -0.8,
-    color = "red",
-    size = 3
-  ) +
-  scale_y_continuous(
-    name = "Percentage of variances\n",
-    sec.axis = sec_axis(
-      ~ . * max(res.mfa_densite_filosofi_2017$eig[,3]) / max(res.mfa_densite_filosofi_2017$eig[,2]),
-      name = "Cumulative percentage of variances\n"
-    )
-  ) +
-  labs(
-    title = "Variances explained\n",
-    x = "\nPrincipal Components"
-  ) +
-  theme_minimal()
+plot_variances_dimensions(res.mfa_densite_filosofi_2017)
 
 fviz_mfa_axes(res.mfa_densite_filosofi_2017,
               repel = TRUE,
@@ -193,7 +118,9 @@ fviz_mfa_var(res.mfa_densite_filosofi_2017, "quanti.var", palette = "jco",
 fviz_mfa_var(res.mfa_densite_filosofi_2017, "quanti.var", palette = "jco",
              col.var.sup = "violet", repel = TRUE, axes = c(1, 3))
 
-coords.mfa_densite_filosofi_2017 <- res.mfa_densite_filosofi_2017$ind$coord[, 1:12]
+coords.mfa_densite_filosofi_2017 <- (
+  res.mfa_densite_filosofi_2017$ind$coord[, 1:12]
+)
 md_mfa_densite_filosofi_2017 <- dist(coords.mfa_densite_filosofi_2017)
 c.mfa_densite_filosofi_2017 <- fastcluster::hclust(md_mfa_densite_filosofi_2017,
                                               method = "ward.D2")
@@ -209,12 +136,19 @@ plot(sort(c.mfa_densite_filosofi_2017$height, decreasing = TRUE)[1:20],
 
 bdd_cluster_afm_densite_filosofi <- data.frame(
   CLUSTER_AFM_DENSITE_FILOSOFI = cutree(c.mfa_densite_filosofi, 5))
+bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI <- as.character(
+  bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI
+)
 bdd_cluster_afm_densite_filosofi$ID <- row.names(
   bdd_cluster_afm_densite_filosofi)
 row.names(bdd_cluster_afm_densite_filosofi) <- NULL
 
 bdd_cluster_afm_densite_filosofi_2017 <- data.frame(
   CLUSTER_AFM_DENSITE_FILOSOFI_2017 = cutree(c.mfa_densite_filosofi_2017, 5))
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017 <- (
+  as.character(
+    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017
+))
 bdd_cluster_afm_densite_filosofi_2017$ID <- row.names(
   bdd_cluster_afm_densite_filosofi_2017)
 row.names(bdd_cluster_afm_densite_filosofi_2017) <- NULL

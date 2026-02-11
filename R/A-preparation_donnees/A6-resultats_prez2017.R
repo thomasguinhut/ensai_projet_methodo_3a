@@ -47,7 +47,8 @@ glimpse(bv_2022_final_5)
 
 
 resultats_bv_2017_t1_2 <- resultats_bv_2017_t1_1 %>% 
-  mutate(`Code de la commune` = str_pad(`Code de la commune`, width = 3, side = "left", pad = "0")) %>%
+  mutate(`Code de la commune` = str_pad(`Code de la commune`,
+                                        width = 3, side = "left", pad = "0")) %>%
   dplyr::select(`Code du département`, `Code de la commune`, `Code du b.vote`,
                 Inscrits, Votants, Exprimés, Voix, V33, V40, V47, V54,
                 V61, V68, V75, V82, V89, V96,
@@ -144,8 +145,7 @@ bv_2022_final_6 <- bv_2022_final_5 %>%
       ~ round((.x / INSCRITS_2017_T1) * 100, 1), 
       .names = "PROP_{.col}"
     ),
-    NX_BV = as.integer(if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na))
-  ) %>% 
+    NX_BV = if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na)) %>% 
   dplyr::select(-c("PROP_INSCRITS_2017_T1", "PROP_VOTANTS_2017_T1"))
 
 glimpse(bv_2022_final_6)

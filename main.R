@@ -27,5 +27,9 @@ rm(packages_requis)
 
 
 source("R/A-preparation_donnees/A-bv_2022.R")
-
 glimpse(bv_2022_final)
+
+source("R/D-fonctions/D0-import_fonctions.R")
+
+base_sondage <- bv_2022_final %>% 
+  filter(TIRABLE)

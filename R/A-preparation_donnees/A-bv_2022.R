@@ -2,9 +2,9 @@
 # source("R/A-preparation_donnees/A2-bv_2022_resultats.R")
 # source("R/A-preparation_donnees/A3-bv_2022_reu.R")
 # source("R/A-preparation_donnees/A4-bv_2022_fermetures.R")
-# source("R/A-preparation_donnees/A5-communes_2022_grille_densite.R")
+# # source("R/A-preparation_donnees/A5-communes_2022_grille_densite.R")
 # source("R/A-preparation_donnees/A6-resultats_prez2017.R")
-# source("R/A-preparation_donnees/A7b-appariement_cluster.R")
+# source("R/A-preparation_donnees/A7b-appariement_filosofi.R")
 # source("R/A-preparation_donnees/A8-clustering.R")
 
 bv_2022_final <-

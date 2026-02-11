@@ -54,6 +54,11 @@ estimation_flash(ech_cube_t1, "LEPEN", "cube", "T1")
 estimation_flash(ech_cube_t1, "MELENCHON", "cube", "T1")
 estimation_flash(ech_cube_t1, "ZEMMOUR", "cube", "T1")
 
+ech_strat_t1 <- tirage_stratifie(base_sondage, 500)
+estimation_flash(ech_strat_t1, "MACRON", "StratificationFilosofi", "T1")
+estimation_flash(ech_strat_t1, "LEPEN", "StratificationFilosofi", "T1")
+estimation_flash(ech_strat_t1, "MELENCHON", "StratificationFilosofi", "T1")
+estimation_flash(ech_strat_t1, "ZEMMOUR", "StratificationFilosofi", "T1")
 
 
 ################################################################################

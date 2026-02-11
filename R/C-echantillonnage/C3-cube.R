@@ -15,7 +15,7 @@ x <- base_sondage %>%
     URBAIN_INTERM = ifelse(DENS3 == "2", 1, 0),
     URBAIN_DENSE = ifelse(DENS3 == "1", 1, 0)
   ) %>% 
-  dplyr::select(INSCRITS_2017_T1, EXPRIMES_2017_T1, MACRON_2017_T1,
+  dplyr::select(ID, INSCRITS_2017_T1, EXPRIMES_2017_T1, MACRON_2017_T1,
                 LEPEN_2017_T1, FILLON_2017_T1, MELENCHON_2017_T1, HAMON_2017_T1,
                 DUPONTAIGNAN_2017_T1, LASSALLE_2017_T1, POUTOU_2017_T1,
                 ASSELINEAU_2017_T1, ARTHAUD_2017_T1, CHEMINADE_2017_T1,
@@ -51,7 +51,23 @@ bdd_cube <- cbind(PI, as.matrix(x))
 # corrplot::corrplot(cor(bdd_cube[,-1], use = "complete.obs"), method = "color",
 #                    type = "upper", tl.col = "black", tl.srt = 45, tl.cex = 0.65)
 
+base_sondage$proba_cube_d1 <- PI
+
 ech <- samplecube(bdd_cube, PI, method = 2)
 
 ech_cube <- tirage_bulletins(base_sondage, ech, "T1", "cube", 100)
+
+design_cube <- svydesign(data = ech_cube,
+                           id = ~ID,
+                           fpc = ~proba_cube_d1,
+                           weights = ~poids_cube)
+
+svymean(design = design_cube, ~I(MACRON*100))
+round(sum(bv_2022_final$MACRON_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
+
+svymean(design = design_cube, ~I(LEPEN*100))
+round(sum(bv_2022_final$LEPEN_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
+
+svymean(design = design_cube, ~I(MELENCHON*100))
+round(sum(bv_2022_final$MELENCHON_T1) / sum(bv_2022_final$EXPRIMES_T1) * 100, 1)
 

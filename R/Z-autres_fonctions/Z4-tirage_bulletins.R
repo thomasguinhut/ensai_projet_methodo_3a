@@ -1,5 +1,6 @@
 tirage_bulletins <- function(base_sondage, indic_d1, tour, methode,
-                             nb_max_bulletins_tires){
+                             nb_max_bulletins_tires, poids_cales,
+                             strate_var){
   
   ech_bv <- getdata(base_sondage, indic_d1)
   
@@ -30,6 +31,13 @@ tirage_bulletins <- function(base_sondage, indic_d1, tour, methode,
   ech_bulletins[[paste0("poids_", methode)]] <-
     1 / (ech_bulletins[[paste0("proba_", methode, "_d1")]] * 
            ech_bulletins[[paste0("proba_", methode, "_d2")]])
+  
+  if (poids_cales) {
+    ech_bulletins[[paste0("poids_", methode)]] <- calage(
+      ech_bulletins, ech_bulletins[[paste0("poids_", methode)]],
+      strate_var
+      )
+  }
 
   return(ech_bulletins)
 

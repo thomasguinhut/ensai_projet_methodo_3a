@@ -1,11 +1,11 @@
-tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires,
+tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
                         stratifie = FALSE, calage = FALSE, tour = "T1") {
   
-  # nb_bv_tires <- 500
-  # nb_bulletins_tires <- 100
-  # stratifie <- FALSE
-  # calage <- FALSE
-  # tour <- "T1"
+  nb_bv_tires <- 500
+  nb_bulletins_tires <- 100
+  stratifie <- TRUE
+  calage <- FALSE
+  tour <- "T1"
   
   bdd_cube <- as.data.frame(if (calage & !calage) {
     bv_2022_final
@@ -61,7 +61,7 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires,
   if (stratifie) {
     ech <- balancedstratification(X,
                                   bdd_cube$CLUSTER_AFM_DENSITE_FILOSOFI_2017,
-                                  PI, comment=FALSE, method=2)
+                                  PI, comment=TRUE, method=2)
   } else {
     ech <- samplecube(X, PI, method = 2, comment = FALSE)
   }
@@ -78,8 +78,12 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires,
     nom_methode <- "cube"
   }
   
-  return(tirage_bulletins(base_sondage, ech, "T1", nom_methode,
-                          nb_max_bulletins_tires))
+  return(tirage_bulletins(base_sondage = base_sondage, 
+                          indic_d1 = ech,
+                          tour = tour,
+                          methode = nom_methode,
+                          nb_max_bulletins_tires = nb_max_bulletins_tires,
+                          poids_cales = poids_cales))
 
 }
 

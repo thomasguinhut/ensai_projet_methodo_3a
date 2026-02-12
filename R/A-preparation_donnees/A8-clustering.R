@@ -121,7 +121,7 @@ coords.mfa_densite_filosofi_2017 <- (
 )
 md_mfa_densite_filosofi_2017 <- dist(coords.mfa_densite_filosofi_2017)
 c.mfa_densite_filosofi_2017 <- fastcluster::hclust(md_mfa_densite_filosofi_2017,
-                                              method = "ward.D2")
+                                                   method = "ward.D2")
 plot(sort(c.mfa_densite_filosofi_2017$height, decreasing = TRUE)[1:20],
      type = "s", xlab = "Nombre de classes", ylab = "Inertie")
 
@@ -133,28 +133,50 @@ plot(sort(c.mfa_densite_filosofi_2017$height, decreasing = TRUE)[1:20],
 
 
 bdd_cluster_afm_densite_filosofi <- data.frame(
-  CLUSTER_AFM_DENSITE_FILOSOFI = cutree(c.mfa_densite_filosofi, 5))
-bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI <- as.character(
-  bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI
+  CLUSTER_AFM_DENSITE_FILOSOFI_5 = cutree(c.mfa_densite_filosofi, 5))
+bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8 <- as.vector(
+  cutree(c.mfa_densite_filosofi, 8))
+
+bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_5 <- as.character(
+  bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_5
 )
+bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8 <- as.character(
+  bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8
+)
+
 bdd_cluster_afm_densite_filosofi$ID <- row.names(
   bdd_cluster_afm_densite_filosofi)
 row.names(bdd_cluster_afm_densite_filosofi) <- NULL
 
+
+
 bdd_cluster_afm_densite_filosofi_2017 <- data.frame(
-  CLUSTER_AFM_DENSITE_FILOSOFI_2017 = cutree(c.mfa_densite_filosofi_2017, 5))
-bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017 <- (
+  CLUSTER_AFM_DENSITE_FILOSOFI_2017_5 = cutree(c.mfa_densite_filosofi_2017, 5))
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9 <- (
+  as.vector(cutree(c.mfa_densite_filosofi_2017, 9))
+)
+
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_5 <- (
   as.character(
-    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017
+    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_5
 ))
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9 <- (
+  as.character(
+    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9
+  ))
+
 bdd_cluster_afm_densite_filosofi_2017$ID <- row.names(
   bdd_cluster_afm_densite_filosofi_2017)
 row.names(bdd_cluster_afm_densite_filosofi_2017) <- NULL
 
+
+
 bdd_cluster <- bdd_cluster_afm_densite_filosofi %>% 
   inner_join(bdd_cluster_afm_densite_filosofi_2017, by = "ID") %>% 
-  dplyr::select(ID, CLUSTER_AFM_DENSITE_FILOSOFI,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017)
+  dplyr::select(ID,
+                CLUSTER_AFM_DENSITE_FILOSOFI_5, CLUSTER_AFM_DENSITE_FILOSOFI_8,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_5,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9)
 
 bv_2022_final_8 <- bv_2022_final_7 %>% 
   left_join(bdd_cluster, by = "ID") %>% 

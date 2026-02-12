@@ -8,7 +8,7 @@ packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
                      "stringr", "shiny", "FactoMineR", "factoextra", "stats", 
                      "lwgeom", "viridis", "RColorBrewer", "ggtext", "ggrepel",
                      "gtsummary", "sampling", "survey", "fastcluster",
-                     "gtsummary", "purrr")
+                     "purrr", "tidyverse")
 
 if (!"pacman" %in% installed.packages()) {
   install.packages("pacman")
@@ -53,19 +53,12 @@ estimation_flash(ech_inegal_t1_cale, "LEPEN", "inegal", "T1")
 estimation_flash(ech_inegal_t1, "MELENCHON", "inegal", "T1")
 estimation_flash(ech_inegal_t1_cale, "MELENCHON", "inegal", "T1")
 
-ech_strat_t1 <- tirage_stratifie(500, 400, "T1")
-ech_strat_t1_cale <- ech_strat_t1 %>% 
-  mutate(poids_stratfilosofi = calage(ech_strat_t1, ech_strat_t1$poids_stratfilosofi))
+ech_strat_t1 <- tirage_stratifie(500, 400, FALSE, "8", TRUE, FALSE, "T1")
 estimation_flash(ech_strat_t1, "MACRON", "stratfilosofi", "T1")
-estimation_flash(ech_strat_t1_cale, "MACRON", "stratfilosofi", "T1")
 estimation_flash(ech_strat_t1, "LEPEN", "stratfilosofi", "T1")
-estimation_flash(ech_strat_t1_cale, "LEPEN", "stratfilosofi", "T1")
 estimation_flash(ech_strat_t1, "MELENCHON", "stratfilosofi", "T1")
-estimation_flash(ech_strat_t1_cale, "MELENCHON", "stratfilosofi", "T1")
-estimation_flash(ech_strat_t1, "ZEMMOUR", "stratfilosofi", "T1")
-estimation_flash(ech_strat_t1_cale, "ZEMMOUR", "stratfilosofi", "T1")
 
-ech_strat_2017_t1 <- tirage_stratifie_vote_prec(500, 400, "T1")
+ech_strat_2017_t1 <- tirage_stratifie_vote_prec(500, 200, "T1")
 ech_strat_2017_t1_cale <- ech_strat_2017_t1 %>% 
   mutate(poids_stratfilosofi2017 = calage(ech_strat_2017_t1, 
                                           ech_strat_2017_t1$poids_stratfilosofi2017))

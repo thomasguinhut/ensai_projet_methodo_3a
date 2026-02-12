@@ -20,8 +20,7 @@ tirage_inegal <- function(nb_bv_tires, nb_max_bulletins_tires,
   
   indic_d1 <- sampling::UPsystematic(base_sondage$proba_inegal_d1)
   
-  return(tirage_bulletins(base_sondage, indic_d1, tour,
-                          ifelse(autopondere, "inegal_autopond", "inegal"),
+  return(tirage_bulletins(base_sondage, indic_d1, tour, "inegal",
                           nb_max_bulletins_tires))
   
 }

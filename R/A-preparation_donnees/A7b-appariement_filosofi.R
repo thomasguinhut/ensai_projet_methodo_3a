@@ -98,7 +98,7 @@ bv_2022_2 <- bv_2022_1 %>%
     PROP_MEN_5IND = round(MEN_5IND / MEN * 100, 1),
     PROP_MEN_PROP = round(MEN_PROP / MEN * 100, 1),
     PROP_MEN_FMP = round(MEN_FMP / MEN * 100, 1),
-    MOY_MEN_NV = round(MEN_SURF / IND, 1),
+    MOY_MEN_NV = round(MEN_SNV / IND, 1),
     PROP_MEN_COLL = round(MEN_COLL / MEN * 100, 1),
     PROP_MEN_MAIS = round(MEN_MAIS / MEN * 100, 1),
     PROP_LOG_SOC = round(LOG_SOC / LOG * 100, 1),

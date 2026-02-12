@@ -65,6 +65,19 @@ estimation_flash(ech_strat_t1_cale, "MELENCHON", "stratfilosofi", "T1")
 estimation_flash(ech_strat_t1, "ZEMMOUR", "stratfilosofi", "T1")
 estimation_flash(ech_strat_t1_cale, "ZEMMOUR", "stratfilosofi", "T1")
 
+ech_strat_2017_t1 <- tirage_stratifie_vote_prec(500, 400, "T1")
+ech_strat_2017_t1_cale <- ech_strat_2017_t1 %>% 
+  mutate(poids_stratfilosofi2017 = calage(ech_strat_2017_t1, 
+                                          ech_strat_2017_t1$poids_stratfilosofi2017))
+estimation_flash(ech_strat_2017_t1, "MACRON", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1_cale, "MACRON", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1, "LEPEN", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1_cale, "LEPEN", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1, "MELENCHON", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1_cale, "MELENCHON", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1, "ZEMMOUR", "stratfilosofi2017", "T1")
+estimation_flash(ech_strat_2017_t1_cale, "ZEMMOUR", "stratfilosofi2017", "T1")
+
 ech_cube_t1 <- tirage_cube(500, 100, FALSE, FALSE, "T1")
 ech_cube_t1_cale <- ech_cube_t1 %>% 
   mutate(poids_cube = calage(ech_cube_t1, ech_cube_t1$poids_cube))

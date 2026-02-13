@@ -1,4 +1,6 @@
-estimation_flash <- function(ech, candidat, methode, tour = "T1") {
+estimation_flash <- function(ech, candidat, tour = "T1") {
+  
+  methode <- deparse(substitute(ech))
   
   # Calcul de l'estimation en pourcentage
   estimation_pct <- estimation_brute(ech, candidat)

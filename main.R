@@ -48,9 +48,9 @@ ech_simple_cale <- tirage_simple(bdd_sondage = base_sondage,
                                  nb_max_bulletins_tires = 100,
                                  poids_cales = TRUE,
                                  tour = "T1")
-estimation_flash(ech_simple_t1, "MACRON", "simple_cale", "T1")
-estimation_flash(ech_simple_t1, "LEPEN", "simple_cale", "T1")
-estimation_flash(ech_simple_t1, "MELENCHON", "simple_cale", "T1")
+estimation_flash(ech_simple_t1, "MACRON", "T1")
+estimation_flash(ech_simple_t1, "LEPEN", "T1")
+estimation_flash(ech_simple_t1, "MELENCHON", "T1")
 
 ech_stratfilosofi2017_cale <- tirage_stratifie(
   bdd_sondage = base_sondage,
@@ -62,9 +62,15 @@ ech_stratfilosofi2017_cale <- tirage_stratifie(
   nb_clusters = "5",
   poids_cales = TRUE,
   tour = "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "MACRON", "stratfilosofi2017_cale", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "LEPEN", "stratfilosofi2017_cale", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "MELENCHON", "stratfilosofi2017_cale", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "MACRON", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "LEPEN", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "MELENCHON", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "ZEMMOUR", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "JADOT", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "PECRESSE", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "LASSALLE", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "ROUSSEL", "T1")
+estimation_flash(ech_stratfilosofi2017_cale, "HIDALGO", "T1")
 
 ech_cube_cale <- tirage_cube(
   bdd_sondage = base_sondage,
@@ -75,23 +81,29 @@ ech_cube_cale <- tirage_cube(
   tour = "T1",
   strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_5",
   comment_cube = FALSE)
-estimation_flash(ech_cube_cale, "MACRON", "cube_cale", "T1")
-estimation_flash(ech_cube_cale, "LEPEN", "cube_cale", "T1")
-estimation_flash(ech_cube_cale, "MELENCHON", "cube_cale", "T1")
+estimation_flash(ech_cube_cale, "MACRON", "T1")
+estimation_flash(ech_cube_cale, "LEPEN", "T1")
+estimation_flash(ech_cube_cale, "MELENCHON", "T1")
 
 ech_cubestrat_caleegal9 <- tirage_cube(
   bdd_sondage = base_sondage,
-  nb_bv_tires = nb_bv_tires,
-  nb_max_bulletins_tires = nb_max_bulletins_tires,
-  type_strat = "egal",
+  nb_bv_tires = 1000,
+  nb_max_bulletins_tires = 200,
+  type_strat = "idf",
   poids_cales = TRUE,
   stratifie = TRUE,
   tour = "T1",
   strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_9",
   comment_cube = FALSE)
-estimation_flash(ech_cubestrat_caleegal9, "MACRON", "cubestrat_caleegal9", "T1")
-estimation_flash(ech_cubestrat_caleegal9, "LEPEN", "cubestrat_caleegal9", "T1")
-estimation_flash(ech_cubestrat_caleegal9, "MELENCHON", "cubestrat_caleegal9", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "MACRON", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "LEPEN", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "MELENCHON", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "ZEMMOUR", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "JADOT", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "PECRESSE", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "LASSALLE", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "ROUSSEL", "T1")
+estimation_flash(ech_cubestrat_caleegal9, "HIDALGO", "T1")
 
 
 

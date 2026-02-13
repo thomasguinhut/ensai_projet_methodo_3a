@@ -18,7 +18,7 @@ calcul_nh <- function(bdd_sondage,
       filter(grepl("^idf_", .data[[strate_var]]))
     
     # Répartir nb_bv_tires entre HDF et IDF
-    nb_bv_hdf <- floor(nb_bv_tires / 2)
+    nb_bv_hdf <- floor(nb_bv_tires * (3 / 4))
     nb_bv_idf <- nb_bv_tires - nb_bv_hdf  # Pour gérer les nombres impairs
     
     # Fonction auxiliaire pour calculer l'allocation
@@ -122,7 +122,7 @@ calcul_nh <- function(bdd_sondage,
   
   # Retourner les probabilités d'inclusion si demandé
   if (return_pik) {
-    # print(Nh)
+    print(Nh)
     # Joindre les allocations à la base de sondage
     base_avec_alloc <- bdd_sondage %>%
       left_join(Nh %>% 

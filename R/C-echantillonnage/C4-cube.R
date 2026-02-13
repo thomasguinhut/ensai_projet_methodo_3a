@@ -1,32 +1,30 @@
 tirage_cube <- function(base_sondage,
                         nb_bv_tires,
                         nb_max_bulletins_tires,
+                        type_strat,
                         poids_cales,
                         stratifie = FALSE,
-                        calage = FALSE,
                         tour = "T1",
                         strate_var = NULL,
                         comment_cube = FALSE) {
-  
-  nb_bv_tires <- 500
-  nb_bulletins_tires <- 100
-  stratifie <- TRUE
-  calage <- FALSE
-  tour <- "T1"
-  
-  bdd_cube <- as.data.frame(if (calage & !calage) {
-    bv_2022_final
-  } else if (calage & stratifie) {
-    bv_2022_final %>% filter(!is.na(CLUSTER_AFM_DENSITE_FILOSOFI_2017_9))
-  } else {base_sondage})
 
+  # nb_bv_tires <- 600
+  # nb_bulletins_tires <- 100
+  # poids_cales <- TRUE
+  # stratifie <- TRUE
+  # tour <- "T1"
+  # strate_var <- "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8"
+  # comment_cube <- TRUE
+  
+  bdd_cube <- as.data.frame(base_sondage)
+  
   x <- bdd_cube %>% 
+    arrange(.data[[strate_var]]) %>% 
     dplyr::select(
       "ID", "TIRABLE",
       ends_with("2017_T1"),
       "DENS3",
       starts_with(c("IND", "MEN", "LOG")), 
-      CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
       -c("IND", "MEN", "LOG"),
       -starts_with("PROP")
     ) %>% 
@@ -46,44 +44,29 @@ tirage_cube <- function(base_sondage,
   row.names(x) <- x$ID
   x$ID <- NULL
   
-  if (calage) x <- x %>% arrange(desc(TIRABLE))
-  
-  n <- nb_bv_tires
-  N <- nrow(base_sondage)
-  PI <- if (calage) c(rep(n/N, N),
-                      rep(0, nrow(bdd_cube) - N)) else rep(n/N, N)
+  PI <- calcul_nh(base_sondage = base_sondage,
+                  nb_bv_tires = nb_bv_tires,
+                  return_pik = TRUE,
+                  type_strat = type_strat,
+                  strate_var = strate_var)
   
   X <- cbind(PI, as.matrix(x))
   
-  if (calage & !stratifie) {
-    base_sondage$proba_cubecale_d1 <- rep(n/N, N)
-  } else if (stratifie & !calage) {
-    base_sondage$proba_cubestrat_d1 <- rep(n/N, N)
-  } else if (stratifie & calage) {
-    base_sondage$proba_cubestratcale_d1 <- rep(n/N, N)
+  if (stratifie) {
+    base_sondage$proba_cubestrat_d1 <- PI
   } else {
-    base_sondage$proba_cube_d1 <- rep(n/N, N)
+    base_sondage$proba_cube_d1 <- PI
   }
   
   if (stratifie) {
     ech <- balancedstratification(X,
-                                  bdd_cube$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
+                                  bdd_cube[[strate_var]],
                                   PI, comment=comment_cube, method=2)
   } else {
     ech <- samplecube(X, PI, method = 2, comment = comment_cube)
   }
   
-  if (calage) ech <- ech[1:N]
-  
-  if (calage & !stratifie) {
-    nom_methode <- "cubecale"
-  } else if (!calage & stratifie) {
-    nom_methode <- "cubestrat"
-  } else if (calage & stratifie) {
-    nom_methode <- "cubestratcale"
-  } else {
-    nom_methode <- "cube"
-  }
+  nom_methode <- if (stratifie) "cubestrat" else "cube"
   
   return(tirage_bulletins(base_sondage = base_sondage, 
                           indic_d1 = ech,
@@ -92,7 +75,4 @@ tirage_cube <- function(base_sondage,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
                           poids_cales = poids_cales,
                           strate_var = strate_var))
-
 }
-
-

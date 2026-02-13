@@ -1,6 +1,8 @@
 executer_tous_plans <- function(base_sondage,
                                 nb_bv_tires,
                                 nb_max_bulletins_tires,
+                                type_strat,
+                                strate_var,
                                 tour = "T1",
                                 simple = TRUE,
                                 stratfilosofi = TRUE,
@@ -35,7 +37,7 @@ executer_tous_plans <- function(base_sondage,
                                      nb_max_bulletins_tires = nb_max_bulletins_tires,
                                      poids_cales = TRUE,
                                      tour = tour,
-                                     strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_8")
+                                     strate_var = strate_var)
     for (candidat in candidats) {
       estimation <- estimation_brute(ech_simple_cale, candidat, "simple")
       resultats[[length(resultats) + 1]] <- data.frame(
@@ -53,6 +55,7 @@ executer_tous_plans <- function(base_sondage,
     ech_stratfilosofi_cale <- tirage_stratifie(base_sondage = base_sondage,
                                                nb_bv_tires = nb_bv_tires,
                                                nb_max_bulletins_tires = nb_max_bulletins_tires,
+                                               type_strat = type_strat,
                                                annee2017 = FALSE,
                                                filosofi = TRUE,
                                                nb_clusters = "8",
@@ -75,6 +78,7 @@ executer_tous_plans <- function(base_sondage,
     ech_stratfilosofi2017_cale <- tirage_stratifie(base_sondage = base_sondage,
                                                    nb_bv_tires = nb_bv_tires,
                                                    nb_max_bulletins_tires = nb_max_bulletins_tires,
+                                                   type_strat = type_strat,
                                                    annee2017 = TRUE,
                                                    filosofi = TRUE,
                                                    nb_clusters = "9",
@@ -97,11 +101,11 @@ executer_tous_plans <- function(base_sondage,
     ech_cube_cale <- tirage_cube(base_sondage = base_sondage,
                                  nb_bv_tires = nb_bv_tires,
                                  nb_max_bulletins_tires = nb_max_bulletins_tires,
+                                 type_strat,
                                  poids_cales = TRUE,
                                  stratifie = FALSE,
-                                 calage = FALSE,
                                  tour = tour,
-                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_8")
+                                 strate_var = strate_var)
     for (candidat in candidats) {
       estimation <- estimation_brute(ech_cube_cale, candidat, "cube")
       resultats[[length(resultats) + 1]] <- data.frame(
@@ -118,17 +122,17 @@ executer_tous_plans <- function(base_sondage,
     ech_cubestrat <- tirage_cube(base_sondage = base_sondage,
                                  nb_bv_tires = nb_bv_tires,
                                  nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                 poids_cales = FALSE,
+                                 type_strat,
+                                 poids_cales = TRUE,
                                  stratifie = TRUE,
-                                 calage = FALSE,
                                  tour = tour,
-                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_8")
+                                 strate_var = strate_var)
     for (candidat in candidats) {
       estimation <- estimation_brute(ech_cubestrat, candidat, "cubestrat")
       resultats[[length(resultats) + 1]] <- data.frame(
         candidat = candidat,
         methode = "cubestrat",
-        calage = FALSE,
+        calage = TRUE,
         estimation = estimation
       )
     }

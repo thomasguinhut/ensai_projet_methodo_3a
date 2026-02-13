@@ -89,21 +89,19 @@ estimation_flash(ech_cubecale_t1, "LEPEN", "cubecale", "T1")
 estimation_flash(ech_cubecale_t1, "MELENCHON", "cubecale", "T1")
 estimation_flash(ech_cubecale_t1, "ZEMMOUR", "cubecale", "T1")
 
-ech_cubestrat_t1 <- tirage_cube(500, 100, TRUE, FALSE, "T1")
-ech_cubestrat_t1_cale <- ech_cubestrat_t1 %>% 
-  mutate(poids_cubestrat <- calage(ech_cubestrat_t1, ech_cubestrat_t1$poids_cubestrat))
-estimation_flash(ech_cubestrat_t1, "MACRON", "cubestrat", "T1")
-estimation_flash(ech_cubestrat_t1_cale, "MACRON", "cubestrat", "T1")
-estimation_flash(ech_cubestrat_t1, "LEPEN", "cubestrat", "T1")
-estimation_flash(ech_cubestrat_t1_cale, "LEPEN", "cubestrat", "T1")
-estimation_flash(ech_cubestrat_t1, "MELENCHON", "cubestrat", "T1")
-estimation_flash(ech_cubestrat_t1, "ZEMMOUR", "cubestrat", "T1")
 
-ech_cubestratcale_t1 <- tirage_cube(500, 100, TRUE, TRUE, "T1")
-estimation_flash(ech_cubestratcale_t1, "MACRON", "cubestratcale", "T1")
-estimation_flash(ech_cubestratcale_t1, "LEPEN", "cubestratcale", "T1")
-estimation_flash(ech_cubestratcale_t1, "MELENCHON", "cubestratcale", "T1")
-estimation_flash(ech_cubestratcale_t1, "ZEMMOUR", "cubestratcale", "T1")
+ech_cubestratcale_t1 <- tirage_cube(base_sondage = base_sondage,
+                                    nb_bv_tires = 600,
+                                    nb_max_bulletins_tires = 100,
+                                    type_strat = "egal",
+                                    poids_cales = TRUE,
+                                    stratifie = TRUE,
+                                    tour = "T1",
+                                    strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8")
+estimation_flash(ech_cubestratcale_t1, "MACRON", "cubestrat", "T1")
+estimation_flash(ech_cubestratcale_t1, "LEPEN", "cubestrat", "T1")
+estimation_flash(ech_cubestratcale_t1, "MELENCHON", "cubestrat", "T1")
+estimation_flash(ech_cubestratcale_t1, "ZEMMOUR", "cubestrat", "T1")
 
 
 
@@ -113,8 +111,8 @@ estimation_flash(ech_cubestratcale_t1, "ZEMMOUR", "cubestratcale", "T1")
 
 
 nb_sim <- 20
-nb_bv_tires <- 500
-nb_max_bulletins_tires <- 200
+nb_bv_tires <- 600
+nb_max_bulletins_tires <- 100
 duree_estimee <- nb_sim * 1.1
 cat("Durée estimée:",
     round(duree_estimee, 1),
@@ -131,10 +129,12 @@ res <- lapply(X = 1:nb_sim, FUN = function(i){
   resultats <- executer_tous_plans(base_sondage = base_sondage,
                                    nb_bv_tires = nb_bv_tires,
                                    nb_max_bulletins_tires = nb_max_bulletins_tires,
+                                   type_strat = "idf",
+                                   strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
                                    tour = "T1",
-                                   simple = TRUE,
-                                   stratfilosofi = TRUE,
-                                   stratfilosofi2017 = TRUE,
+                                   simple = FALSE,
+                                   stratfilosofi = FALSE,
+                                   stratfilosofi2017 = FALSE,
                                    cube = FALSE,
                                    cubestrat = TRUE)
   resultats$simulation <- i
@@ -146,14 +146,14 @@ res_final <- Reduce(f = rbind, x = res)
 aws.s3::s3write_using(
   res_final,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "resultats_simulations_MC.rds",
+  object = "resultats_simulations_MC_600_100.rds",
   bucket = "projet-ensai-methodo-3a",
   opts = list(region = "")
 )
 
 duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
 cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
-cat("Résultats sauvegardés :", "resultats_simulations_MC.rds", "\n")
+cat("Résultats sauvegardés :", "resultats_simulations_MC_600_100.rds", "\n")
 
 plot_resultats(res_final)
 

@@ -1,6 +1,7 @@
 tirage_stratifie <- function(base_sondage,
                              nb_bv_tires,
                              nb_max_bulletins_tires,
+                             type_strat,
                              annee2017,
                              filosofi,
                              nb_clusters,
@@ -38,42 +39,17 @@ tirage_stratifie <- function(base_sondage,
     "proba_strat2017_d1"
   }
   
-  # Calcul du nombre d'observations par strate
-  Nh <- base_sondage %>%
-    group_by(.data[[strate_var]]) %>%
-    summarise(Nh = n(), .groups = "drop")
-    
-  Nh_vect <- Nh %>% pull(Nh)
-  
-  S_yh <- aggregate(reformulate(strate_var, "LEPEN_2017_T1"),
-                    data = base_sondage, 
-                    FUN = var,
-                    na.rm = TRUE)$LEPEN_2017_T1
-  
-  # Allocation optimales
-  den <- t(Nh_vect) %*% S_yh
-  n_opt <- round(c(1000/den)*(Nh_vect*S_yh))
-  Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(base_sondage))
-
-  # S'assurer qu'il y a au moins 1 par strate
-  Nh$alloc <- pmax(Nh$alloc, 1)
-  
-  # Ajustement pour respecter nb_bv_tires
-  difference <- nb_bv_tires - sum(Nh$alloc)
-  if (difference != 0) {
-    Nh$alloc[which.max(Nh$alloc)] <- Nh$alloc[which.max(Nh$alloc)] + difference
-  }
-  
-  # Tri
-  Nh <- as.data.frame(Nh) %>% 
-    arrange(.data[[strate_var]])
   base_sondage_inter <- base_sondage[order(base_sondage[[strate_var]]), ]
   
   # Tirage stratifié
   obs_ech <- sampling::strata(
     data = base_sondage_inter,
     stratanames = strate_var,
-    size = Nh$alloc,
+    size = calcul_nh(base_sondage = base_sondage,
+                     nb_bv_tires = nb_bv_tires,
+                     return_pik = FALSE,
+                     type_strat = type_strat,
+                     strate_var = strate_var)$alloc,
     method = "srswor"
   )
   

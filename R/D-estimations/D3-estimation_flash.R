@@ -1,10 +1,10 @@
 estimation_flash <- function(ech, candidat, methode, tour = "T1") {
   
   # Calcul de l'estimation en pourcentage
-  estimation_pct <- estimation_brute(ech, candidat, methode)
+  estimation_pct <- estimation_brute(ech, candidat)
   
   # Valeur réelle en pourcentage
-  valeur_reelle_pct <- valeur_reelle(ech, candidat, methode, tour)
+  valeur_reelle_pct <- valeur_reelle(ech, candidat, tour)
   
   # Nombre total de bulletins et de bureaux de vote
   nb_bulletins <- nrow(ech)

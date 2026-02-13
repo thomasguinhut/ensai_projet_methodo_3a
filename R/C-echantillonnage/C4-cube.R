@@ -1,7 +1,7 @@
-tirage_cube <- function(base_sondage,
+tirage_cube <- function(bdd_sondage,
                         nb_bv_tires,
                         nb_max_bulletins_tires,
-                        type_strat,
+                        type_strat = NULL,
                         poids_cales,
                         stratifie = FALSE,
                         tour = "T1",
@@ -16,7 +16,7 @@ tirage_cube <- function(base_sondage,
   # strate_var <- "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8"
   # comment_cube <- TRUE
   
-  bdd_cube <- as.data.frame(base_sondage)
+  bdd_cube <- as.data.frame(bdd_sondage)
   
   x <- bdd_cube %>% 
     arrange(.data[[strate_var]]) %>% 
@@ -44,19 +44,14 @@ tirage_cube <- function(base_sondage,
   row.names(x) <- x$ID
   x$ID <- NULL
   
-  PI <- calcul_nh(base_sondage = base_sondage,
+  PI <- calcul_nh(bdd_sondage = bdd_sondage,
                   nb_bv_tires = nb_bv_tires,
                   return_pik = TRUE,
                   type_strat = type_strat,
                   strate_var = strate_var)
   
+  bdd_sondage$proba_d1 <- PI
   X <- cbind(PI, as.matrix(x))
-  
-  if (stratifie) {
-    base_sondage$proba_cubestrat_d1 <- PI
-  } else {
-    base_sondage$proba_cube_d1 <- PI
-  }
   
   if (stratifie) {
     ech <- balancedstratification(X,
@@ -66,12 +61,9 @@ tirage_cube <- function(base_sondage,
     ech <- samplecube(X, PI, method = 2, comment = comment_cube)
   }
   
-  nom_methode <- if (stratifie) "cubestrat" else "cube"
-  
-  return(tirage_bulletins(base_sondage = base_sondage, 
+  return(tirage_bulletins(bdd_sondage = bdd_sondage, 
                           indic_d1 = ech,
                           tour = tour,
-                          methode = nom_methode,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
                           poids_cales = poids_cales,
                           strate_var = strate_var))

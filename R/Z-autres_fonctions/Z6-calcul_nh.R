@@ -1,4 +1,4 @@
-calcul_nh <- function(base_sondage,
+calcul_nh <- function(bdd_sondage,
                       nb_bv_tires,
                       return_pik,
                       strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
@@ -6,15 +6,15 @@ calcul_nh <- function(base_sondage,
   
   # nb_bv_tires <- 600
   # return_pik <- TRUE
-  # strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8"
+  # strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_5"
   # type_strat = NULL
   
   if (!is.null(type_strat) && type_strat == "idf") {
     # Séparer les strates HDF et IDF
-    base_hdf <- base_sondage %>% 
+    base_hdf <- bdd_sondage %>% 
       filter(grepl("^hdf_", .data[[strate_var]]))
     
-    base_idf <- base_sondage %>% 
+    base_idf <- bdd_sondage %>% 
       filter(grepl("^idf_", .data[[strate_var]]))
     
     # Répartir nb_bv_tires entre HDF et IDF
@@ -54,7 +54,7 @@ calcul_nh <- function(base_sondage,
     
   } else if (!is.null(type_strat) && type_strat == "egal") {
     # Allocation égale dans chaque strate
-    Nh <- base_sondage %>%
+    Nh <- bdd_sondage %>%
       group_by(.data[[strate_var]]) %>%
       summarise(Nh = n(), .groups = "drop")
     
@@ -99,12 +99,12 @@ calcul_nh <- function(base_sondage,
     
   } else {
     # Calcul classique sans stratification particulière
-    Nh <- base_sondage %>%
+    Nh <- bdd_sondage %>%
       group_by(.data[[strate_var]]) %>%
       summarise(Nh = n(), .groups = "drop")
     
     # Allocation proportionnelle
-    Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(base_sondage))
+    Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(bdd_sondage))
     
     # S'assurer qu'il y a au moins 1 par strate
     Nh$alloc <- pmax(Nh$alloc, 1)
@@ -122,9 +122,9 @@ calcul_nh <- function(base_sondage,
   
   # Retourner les probabilités d'inclusion si demandé
   if (return_pik) {
-    print(Nh)
+    # print(Nh)
     # Joindre les allocations à la base de sondage
-    base_avec_alloc <- base_sondage %>%
+    base_avec_alloc <- bdd_sondage %>%
       left_join(Nh %>% 
                   dplyr::select(.data[[strate_var]], Nh, alloc),
                 by = strate_var) %>% 
@@ -139,24 +139,24 @@ calcul_nh <- function(base_sondage,
   }
 }
 
-# print(calcul_nh(base_sondage = base_sondage,
+# print(calcul_nh(bdd_sondage = base_sondage,
 #                 nb_bv_tires = 600,
 #                 return_pik = FALSE,
-#                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
-#                 type_strat = NULL))
-# print(calcul_nh(base_sondage = base_sondage,
+#                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_5",
+#                 type_strat = "idf"))
+# print(calcul_nh(bdd_sondage = bdd_sondage,
 #                 nb_bv_tires = 600,
 #                 return_pik = TRUE,
 #                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
 #                 type_strat = NULL))
 # 
-# print(calcul_nh(base_sondage = base_sondage,
+# print(calcul_nh(bdd_sondage = bdd_sondage,
 #                 nb_bv_tires = 600,
 #                 return_pik = FALSE,
 #                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
 #                 type_strat = "idf"))
 # 
-# print(calcul_nh(base_sondage = base_sondage,
+# print(calcul_nh(bdd_sondage = bdd_sondage,
 #                 nb_bv_tires = 600,
 #                 return_pik = FALSE,
 #                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",

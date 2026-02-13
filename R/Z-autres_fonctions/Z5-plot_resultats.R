@@ -1,87 +1,205 @@
 plot_resultats <- function(res) {
   
-  res_resultat <- res %>% 
-    mutate(methode = ifelse(calage, paste0(methode, "_cale"), methode),
-           methode = factor(methode, 
-                            levels = c("simple", "simple_cale",
-                                       "stratfilosofi_cale",
-                                       "stratfilosofi2017_cale",
-                                       "cubestrat")))
+  library(dplyr)
+  library(ggplot2)
+  library(ggrepel)
+  library(tibble)
   
-  # Calculer les valeurs réelles pour chaque candidat
-  valeurs_reelles <- data.frame(
+  # -----------------------------
+  # Mise en forme des méthodes
+  # -----------------------------
+  niveaux_methodes <- c(
+    "simple",
+    "simple_cale",
+    "stratfilosofi_cale",
+    "stratfilosofi2017_cale",
+    "cube_filosofi2017_cale",
+    "cubestrat_filosofi2017_caleidf5",
+    "cubestrat_filosofi2017_caleidf9",
+    "cubestrat_filosofi2017_caleegal5",
+    "cubestrat_filosofi2017_caleegal9"
+  )
+  
+  res_resultat <- res %>%
+    mutate(methode = factor(methode, levels = niveaux_methodes))
+  
+  # -----------------------------
+  # Fonds alternés (sans légende)
+  # -----------------------------
+  fond_methodes <- tibble(
+    xmin = seq_along(niveaux_methodes) - 0.5,
+    xmax = seq_along(niveaux_methodes) + 0.5,
+    fond = rep(c(TRUE, FALSE), length.out = length(niveaux_methodes))
+  )
+  
+  # -----------------------------
+  # Valeurs réelles
+  # -----------------------------
+  valeurs_reelles <- tibble(
     candidat = c("MACRON", "LEPEN", "MELENCHON"),
     valeur = c(
-      valeur_reelle(NULL, "MACRON", NULL, "T1"),
-      valeur_reelle(NULL, "LEPEN", NULL, "T1"),
-      valeur_reelle(NULL, "MELENCHON", NULL, "T1")
+      valeur_reelle(NULL, "MACRON", "T1"),
+      valeur_reelle(NULL, "LEPEN", "T1"),
+      valeur_reelle(NULL, "MELENCHON", "T1")
     )
   )
   
-  # Estimations des instituts de sondage
-  sondages_instituts <- data.frame(
-    institut = rep(c("TF1/Ifop", "FTV/Ipsos", "M6/Harris", "BFMTV/Elabe", "CNEWS/OpinionWay"), 3),
+  # -----------------------------
+  # Estimations instituts
+  # -----------------------------
+  sondages_instituts <- tibble(
+    institut = rep(
+      c("TF1/Ifop", "FTV/Ipsos", "M6/Harris", "BFMTV/Elabe", "CNEWS/OpinionWay"),
+      3
+    ),
     candidat = rep(c("MACRON", "LEPEN", "MELENCHON"), each = 5),
     valeur = c(
-      # MACRON
-      28.6, 28.1, 28.3, 28.5, 29,
-      # LEPEN
-      24.4, 23.3, 24.9, 24.2, 24,
-      # MELENCHON
-      20.2, 20.1, 20, 20.2, 20
+      28.6, 28.1, 28.3, 28.5, 29.0,
+      24.4, 23.3, 24.9, 24.2, 24.0,
+      20.2, 20.1, 20.0, 20.2, 20.0
     )
   )
   
-  # Graphique avec les lignes horizontales
-  ggplot(res_resultat, aes(x=methode, y=estimation, fill=candidat)) + 
-    geom_boxplot() +
-    # Valeurs réelles (trait plein)
-    geom_hline(data = valeurs_reelles, 
-               aes(yintercept = valeur, color = candidat),
-               linetype = "solid",
-               linewidth = 0.8) +
-    # Estimations instituts (pointillés)
-    geom_hline(data = sondages_instituts, 
-               aes(yintercept = valeur, color = candidat),
-               linetype = "dotted",
-               linewidth = 0.8,
-               alpha = 0.7) +
-    # Labels des instituts à droite avec ggrepel
-    geom_text_repel(data = sondages_instituts,
-                    aes(x = Inf, y = valeur, label = institut, color = candidat),
-                    hjust = 0,
-                    size = 2.5,
-                    direction = "y",
-                    xlim = c(5.4, Inf),
-                    segment.size = 0.2,
-                    segment.alpha = 0.5) +
-    scale_color_manual(values = c("LEPEN" = "#F8766D", 
-                                  "MACRON" = "#00BA38", 
-                                  "MELENCHON" = "#619CFF"),
-                       guide = "none") +
-    scale_y_continuous(breaks = seq(18, 30, by = 1),
-                       minor_breaks = seq(18, 30, by = 0.2)) +
-    scale_x_discrete(expand = expansion(add = c(0.5, 0.3))) +
+  # -----------------------------
+  # Graphique
+  # -----------------------------
+  ggplot() +
+    
+    # Fonds alternés discrets
+    geom_rect(
+      data = fond_methodes,
+      aes(
+        xmin = xmin,
+        xmax = xmax,
+        ymin = -Inf,
+        ymax = Inf
+      ),
+      inherit.aes = FALSE,
+      fill = "grey70",
+      alpha = 0.04
+    ) +
+    
+    # Boxplots par 3
+    geom_boxplot(
+      data = res_resultat,
+      aes(
+        x = methode,
+        y = estimation,
+        fill = candidat
+      ),
+      position = position_dodge2(
+        width = 0.8,
+        padding = 0.35
+      ),
+      width = 0.6,
+      alpha = 0.9,
+      linewidth = 0.5,
+      outlier.shape = NA
+    ) +
+    
+    # Valeurs réelles
+    geom_hline(
+      data = valeurs_reelles,
+      aes(yintercept = valeur, color = candidat),
+      linewidth = 1.1
+    ) +
+    
+    # Instituts (pointillés)
+    geom_hline(
+      data = sondages_instituts,
+      aes(yintercept = valeur, color = candidat),
+      linetype = "dotted",
+      linewidth = 0.8,
+      alpha = 0.7
+    ) +
+    
+    # Labels instituts (plus à droite)
+    geom_text_repel(
+      data = sondages_instituts,
+      aes(
+        x = length(niveaux_methodes) + 0.7,
+        y = valeur,
+        label = institut,
+        color = candidat
+      ),
+      hjust = 0,
+      size = 2.6,
+      direction = "y",
+      segment.size = 0.25,
+      segment.alpha = 0.5,
+      show.legend = FALSE
+    ) +
+    
+    # Couleurs
+    scale_fill_manual(
+      values = c(
+        "LEPEN" = "#E76F51",
+        "MACRON" = "#2A9D8F",
+        "MELENCHON" = "#457B9D"
+      )
+    ) +
+    scale_color_manual(
+      values = c(
+        "LEPEN" = "#E76F51",
+        "MACRON" = "#2A9D8F",
+        "MELENCHON" = "#457B9D"
+      ),
+      guide = "none"
+    ) +
+    
+    # Axes
+    scale_y_continuous(
+      breaks = seq(18, 30, by = 1),
+      minor_breaks = NULL
+    ) +
+    scale_x_discrete(
+      expand = expansion(add = c(0.6, 1.4))
+    ) +
+    
+    # Titres
     labs(
       title = paste0(
         "Distribution des estimations (",
-        "simulations Monte-Carlo avec ", nb_sim, " tirages de maximum ",
-        nb_max_bulletins_tires, " bulletins dans ", nb_bv_tires,
-        " bureaux de vote)"),
-      subtitle = "Lignes pleines : valeurs réelles dans la base des bureaux de vote du projet | Lignes pointillées : estimations des instituts de sondage à 20h",
+        "simulations Monte-Carlo avec ", nb_sim,
+        " tirages de maximum ", nb_max_bulletins_tires,
+        " bulletins dans ", nb_bv_tires, " bureaux de vote)"
+      ),
+      subtitle = "Traits pleins : valeurs réelles | Pointillés : estimations des instituts à 20h",
       x = "\nPlan de sondage",
       y = "Estimation (%)\n",
       fill = ""
     ) +
+    
     coord_cartesian(clip = "off") +
-    theme_minimal() +
+    
+    # Thème
+    theme_minimal(base_size = 11) +
     theme(
-      plot.margin = margin(5.5, 80, 5.5, 5.5),
       legend.position = "bottom",
-      panel.grid.major = element_line(color = "gray85", linewidth = 0.5),
-      panel.grid.minor = element_line(color = "gray92", linewidth = 0.3),
-      plot.title = element_text(face = "bold", size = 12),
-      plot.subtitle = element_text(size = 9, color = "gray30")
+      
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.y = element_line(color = "grey85", linewidth = 0.4),
+      
+      axis.text.x = element_text(
+        angle = 30,
+        hjust = 1,
+        size = 9
+      ),
+      
+      axis.title = element_text(face = "bold"),
+      
+      plot.title = element_text(
+        face = "bold",
+        size = 13,
+        margin = margin(b = 6)
+      ),
+      plot.subtitle = element_text(
+        size = 10,
+        color = "grey30",
+        margin = margin(b = 10)
+      ),
+      
+      plot.margin = margin(10, 10, 10, 10)
     )
-  
 }

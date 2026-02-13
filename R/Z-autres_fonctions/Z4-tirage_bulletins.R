@@ -1,8 +1,8 @@
-tirage_bulletins <- function(base_sondage, indic_d1, tour, methode,
+tirage_bulletins <- function(bdd_sondage, indic_d1, tour,
                              nb_max_bulletins_tires, poids_cales,
                              strate_var = NULL){
   
-  ech_bv <- getdata(base_sondage, indic_d1)
+  ech_bv <- getdata(bdd_sondage, indic_d1)
   
   bds_individus <- creer_base_bulletins(ech_bv, tour)
   
@@ -17,24 +17,20 @@ tirage_bulletins <- function(base_sondage, indic_d1, tour, methode,
   
   ech_bulletins <- getdata(bds_individus, indic_d2)
   
-  names(ech_bulletins)[names(ech_bulletins) == "Prob"] <- paste0("proba_",
-                                                                 methode,
-                                                                 "_d2")
+  names(ech_bulletins)[names(ech_bulletins) == "Prob"] <- "proba_d2"
   
   ech_bulletins <- merge(ech_bulletins,
-                         base_sondage[, c("ID", paste0("proba_",
-                                                       methode, "_d1"))],
+                         bdd_sondage[, c("ID", "proba_d1")],
                          by = "ID",
                          all.x = T,
                          all.y = F)
   
-  ech_bulletins[[paste0("poids_", methode)]] <-
-    1 / (ech_bulletins[[paste0("proba_", methode, "_d1")]] * 
-           ech_bulletins[[paste0("proba_", methode, "_d2")]])
+  ech_bulletins$poids <-
+    1 / (ech_bulletins$proba_d1 * ech_bulletins$proba_d2)
   
   if (poids_cales) {
-    ech_bulletins[[paste0("poids_", methode)]] <- calage(
-      ech_bulletins, ech_bulletins[[paste0("poids_", methode)]],
+    ech_bulletins$poids <- calage(
+      ech_bulletins, ech_bulletins$poids,
       strate_var
       )
   }

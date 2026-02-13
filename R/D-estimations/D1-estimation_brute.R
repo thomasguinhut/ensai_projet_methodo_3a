@@ -1,8 +1,8 @@
-estimation_brute <- function(ech, candidat, methode) {
+estimation_brute <- function(ech, candidat) {
   
   estimation_pct <- round(
-    (sum(ech[[candidat]] * ech[[paste0("poids_", methode)]]) /
-       sum(ech[[paste0("poids_", methode)]])) * 100, 2
+    (sum(ech[[candidat]] * ech$poids) /
+       sum(ech$poids)) * 100, 2
   )
   
   return(estimation_pct)

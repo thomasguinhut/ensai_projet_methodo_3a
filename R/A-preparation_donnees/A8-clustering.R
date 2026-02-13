@@ -128,6 +128,47 @@ plot(sort(c.mfa_densite_filosofi_2017$height, decreasing = TRUE)[1:20],
 
 
 ################################################################################
+############################ AFM - grille densité x 2017 #######################
+################################################################################
+
+
+colnames(bdd_facto)
+
+res.mfa_densite_2017 <- MFA(
+  bdd_facto %>% dplyr::select(starts_with("DENS3_P"), ends_with("2017_T1")),
+  group = c(3, 12),
+  type = rep("s", 2),
+  ncp = 10,
+  name.group = c("Grille densité", "Présidentielle 2017"),
+  graph = FALSE
+)
+
+plot_variances_dimensions(res.mfa_densite_2017)
+
+fviz_mfa_axes(res.mfa_densite_2017,
+              repel = TRUE,
+              axes = c(1, 2),
+              palette = brewer.pal(4, "Set2")[2:4])
+fviz_mfa_axes(res.mfa_densite_2017,
+              repel = TRUE,
+              axes = c(1, 3),
+              palette = brewer.pal(4, "Set2")[2:4])
+
+fviz_mfa_var(res.mfa_densite_2017, "quanti.var", palette = "jco",
+             col.var.sup = "violet", repel = TRUE, axes = c(1, 2))
+fviz_mfa_var(res.mfa_densite_2017, "quanti.var", palette = "jco",
+             col.var.sup = "violet", repel = TRUE, axes = c(1, 3))
+
+coords.mfa_densite_20147 <- res.mfa_densite_2017$ind$coord[, 1:8]
+md_mfa_densite_2017 <- dist(coords.mfa_densite_20147)
+c.mfa_densite_2017 <- fastcluster::hclust(md_mfa_densite_2017,
+                                              method = "ward.D2")
+plot(sort(c.mfa_densite_2017$height, decreasing = TRUE)[1:20], type = "s",
+     xlab = "Nombre de classes", ylab = "Inertie")
+
+
+
+################################################################################
 ################################ AJOUT DES CLUSTERS ############################
 ################################################################################
 
@@ -171,12 +212,40 @@ row.names(bdd_cluster_afm_densite_filosofi_2017) <- NULL
 
 
 
+bdd_cluster_afm_densite_2017 <- data.frame(
+  CLUSTER_AFM_DENSITE_2017_3 = cutree(c.mfa_densite_2017, 3))
+bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6 <- (
+  as.vector(cutree(c.mfa_densite_2017, 6))
+)
+
+bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_3 <- (
+  as.character(
+    bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_3
+  ))
+bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6 <- (
+  as.character(
+    bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6
+  ))
+
+bdd_cluster_afm_densite_2017$ID <- row.names(
+  bdd_cluster_afm_densite_2017)
+row.names(bdd_cluster_afm_densite_2017) <- NULL
+
+
+
 bdd_cluster <- bdd_cluster_afm_densite_filosofi %>% 
   inner_join(bdd_cluster_afm_densite_filosofi_2017, by = "ID") %>% 
   dplyr::select(ID,
                 CLUSTER_AFM_DENSITE_FILOSOFI_5, CLUSTER_AFM_DENSITE_FILOSOFI_8,
                 CLUSTER_AFM_DENSITE_FILOSOFI_2017_5,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9)
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9) %>% 
+  inner_join(bdd_cluster_afm_densite_2017, by = "ID") %>% 
+  dplyr::select(ID,
+                CLUSTER_AFM_DENSITE_FILOSOFI_5, CLUSTER_AFM_DENSITE_FILOSOFI_8,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_5,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
+                CLUSTER_AFM_DENSITE_2017_3,
+                CLUSTER_AFM_DENSITE_2017_6)
 
 bv_2022_final_8 <- bv_2022_final_7 %>% 
   left_join(bdd_cluster, by = "ID") %>% 

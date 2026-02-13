@@ -112,4 +112,75 @@ estimation_flash(ech_cubestratcale_t1, "ZEMMOUR", "cubestratcale", "T1")
 ################################################################################
 
 
+nb_sim <- 20
+nb_bv_tires <- 500
+nb_max_bulletins_tires <- 200
+duree_estimee <- nb_sim * 1.1
+cat("Durée estimée:",
+    round(duree_estimee, 1),
+    "minutes (~",
+    round(duree_estimee/60, 1),
+    "heures)\n\n")
+
+debut_total <- Sys.time()
+cat("Début des simulations :", nb_sim, "itérations\n")
+
+res <- lapply(X = 1:nb_sim, FUN = function(i){
+  cat("Simulation", i, "/", nb_sim, "\n")
+  
+  resultats <- executer_tous_plans(base_sondage = base_sondage,
+                                   nb_bv_tires = nb_bv_tires,
+                                   nb_max_bulletins_tires = nb_max_bulletins_tires,
+                                   tour = "T1",
+                                   simple = TRUE,
+                                   stratfilosofi = TRUE,
+                                   stratfilosofi2017 = TRUE,
+                                   cube = FALSE,
+                                   cubestrat = TRUE)
+  resultats$simulation <- i
+  
+  return(resultats)
+})
+
+res_final <- Reduce(f = rbind, x = res)
+aws.s3::s3write_using(
+  res_final,
+  FUN = function(data, file) saveRDS(data, file = file),
+  object = "resultats_simulations_MC.rds",
+  bucket = "projet-ensai-methodo-3a",
+  opts = list(region = "")
+)
+
+duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
+cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
+cat("Résultats sauvegardés :", "resultats_simulations_MC.rds", "\n")
+
+plot_resultats(res_final)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 
+# 
+# ech_inegal_t1 <- tirage_inegal(500, 400, TRUE, "T1")
+# ech_inegal_t1_cale <- ech_inegal_t1 %>% 
+#   mutate(poids_inegal = calage(ech_inegal_t1, ech_inegal_t1$poids_inegal))
+# estimation_flash(ech_inegal_t1, "MACRON", "inegal", "T1")
+# estimation_flash(ech_inegal_t1_cale, "MACRON", "inegal", "T1")
+# estimation_flash(ech_inegal_t1, "LEPEN", "inegal", "T1")
+# estimation_flash(ech_inegal_t1_cale, "LEPEN", "inegal", "T1")
+# estimation_flash(ech_inegal_t1, "MELENCHON", "inegal", "T1")
+# estimation_flash(ech_inegal_t1_cale, "MELENCHON", "inegal", "T1")
 

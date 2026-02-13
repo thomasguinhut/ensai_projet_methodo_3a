@@ -1,5 +1,12 @@
-tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
-                        stratifie = FALSE, calage = FALSE, tour = "T1") {
+tirage_cube <- function(base_sondage,
+                        nb_bv_tires,
+                        nb_max_bulletins_tires,
+                        poids_cales,
+                        stratifie = FALSE,
+                        calage = FALSE,
+                        tour = "T1",
+                        strate_var = NULL,
+                        comment_cube = FALSE) {
   
   nb_bv_tires <- 500
   nb_bulletins_tires <- 100
@@ -10,7 +17,7 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
   bdd_cube <- as.data.frame(if (calage & !calage) {
     bv_2022_final
   } else if (calage & stratifie) {
-    bv_2022_final %>% filter(!is.na(CLUSTER_AFM_DENSITE_FILOSOFI))
+    bv_2022_final %>% filter(!is.na(CLUSTER_AFM_DENSITE_FILOSOFI_2017_9))
   } else {base_sondage})
 
   x <- bdd_cube %>% 
@@ -19,7 +26,7 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
       ends_with("2017_T1"),
       "DENS3",
       starts_with(c("IND", "MEN", "LOG")), 
-      CLUSTER_AFM_DENSITE_FILOSOFI_2017,
+      CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
       -c("IND", "MEN", "LOG"),
       -starts_with("PROP")
     ) %>% 
@@ -60,10 +67,10 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
   
   if (stratifie) {
     ech <- balancedstratification(X,
-                                  bdd_cube$CLUSTER_AFM_DENSITE_FILOSOFI_2017,
-                                  PI, comment=TRUE, method=2)
+                                  bdd_cube$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
+                                  PI, comment=comment_cube, method=2)
   } else {
-    ech <- samplecube(X, PI, method = 2, comment = FALSE)
+    ech <- samplecube(X, PI, method = 2, comment = comment_cube)
   }
   
   if (calage) ech <- ech[1:N]
@@ -83,7 +90,8 @@ tirage_cube <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales,
                           tour = tour,
                           methode = nom_methode,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales))
+                          poids_cales = poids_cales,
+                          strate_var = strate_var))
 
 }
 

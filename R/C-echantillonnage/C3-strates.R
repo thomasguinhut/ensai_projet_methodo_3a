@@ -1,9 +1,10 @@
-tirage_stratifie <- function(nb_bv_tires,
+tirage_stratifie <- function(base_sondage,
+                             nb_bv_tires,
                              nb_max_bulletins_tires,
                              annee2017,
+                             filosofi,
                              nb_clusters,
                              poids_cales,
-                             alloc_opt = FALSE,
                              tour = "T1") {
   
   # nb_bv_tires <- 500
@@ -11,31 +12,30 @@ tirage_stratifie <- function(nb_bv_tires,
   # annee2017 <- TRUE
   # nb_clusters <- 5
   # poids_cales <- TRUE
-  # alloc_opt <- FALSE
   # tour <- "T1"
   
-  strate_var <- if (annee2017) {
+  strate_var <- if (annee2017 & filosofi) {
     paste0("CLUSTER_AFM_DENSITE_FILOSOFI_2017_", nb_clusters)
-  } else {
+  } else if (!annee2017 & filosofi) {
     paste0("CLUSTER_AFM_DENSITE_FILOSOFI_", nb_clusters)
+  } else if (annee2017 & !filosofi) {
+    paste0("CLUSTER_AFM_DENSITE_2017_", nb_clusters)
   }
   
-  methode <- if (annee2017) {
+  methode <- if (annee2017 & filosofi) {
     "stratfilosofi2017"
-  } else {
+  } else if (!annee2017 & filosofi) {
     "stratfilosofi"
+  } else if (annee2017 & !filosofi) {
+    "strat2017"
   }
   
-  somme_var <- if (annee2017) {
-    "somme_EXPRIMES_T1_2017"
-  } else {
-    "somme_EXPRIMES_T1"
-  }
-  
-  proba_var <- if (annee2017) {
+  proba_var <- if (annee2017 & filosofi) {
     "proba_stratfilosofi2017_d1"
-  } else {
+  } else if (!annee2017 & filosofi) {
     "proba_stratfilosofi_d1"
+  } else if (annee2017 & !filosofi) {
+    "proba_strat2017_d1"
   }
   
   # Calcul du nombre d'observations par strate
@@ -53,14 +53,8 @@ tirage_stratifie <- function(nb_bv_tires,
   # Allocation optimales
   den <- t(Nh_vect) %*% S_yh
   n_opt <- round(c(1000/den)*(Nh_vect*S_yh))
-  
-  # Allocation proportionnelle sinon
-  if (alloc_opt) {
-    Nh$alloc <- n_opt
-  } else {
-    Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(base_sondage))
-  }
-  
+  Nh$alloc <- round(Nh$Nh * nb_bv_tires / nrow(base_sondage))
+
   # S'assurer qu'il y a au moins 1 par strate
   Nh$alloc <- pmax(Nh$alloc, 1)
   

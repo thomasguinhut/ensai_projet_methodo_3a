@@ -1,5 +1,9 @@
-tirage_simple <- function(nb_bv_tires, nb_max_bulletins_tires, poids_cales, 
-                          tour = "T1") {
+tirage_simple <- function(base_sondage,
+                          nb_bv_tires,
+                          nb_max_bulletins_tires,
+                          poids_cales,
+                          tour = "T1",
+                          strate_var = NULL) {
   
   # nb_bv_tires <- 500
   # nb_bulletins_tires <- 100

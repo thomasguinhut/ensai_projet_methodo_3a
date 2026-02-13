@@ -1,6 +1,6 @@
 tirage_bulletins <- function(base_sondage, indic_d1, tour, methode,
                              nb_max_bulletins_tires, poids_cales,
-                             strate_var){
+                             strate_var = NULL){
   
   ech_bv <- getdata(base_sondage, indic_d1)
   

@@ -122,7 +122,7 @@ calcul_nh <- function(bdd_sondage,
   
   # Retourner les probabilités d'inclusion si demandé
   if (return_pik) {
-    print(Nh)
+    # print(Nh)
     # Joindre les allocations à la base de sondage
     base_avec_alloc <- bdd_sondage %>%
       left_join(Nh %>% 

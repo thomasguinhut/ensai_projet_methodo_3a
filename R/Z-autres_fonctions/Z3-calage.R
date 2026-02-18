@@ -1,4 +1,7 @@
-calage <- function(ech, poids, strate_var = NULL) {
+calage <- function(ech, poids, type_calage = "poststrat", strate_var = NULL,
+                   marges) {
+  
+  strate_var <- "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8"
   
   # Identifier les valeurs uniques du cluster
   valeurs_cluster <- bv_2022_final %>% 

@@ -14,10 +14,7 @@ plot_resultats <- function(res) {
     "stratfilosofi_cale",
     "stratfilosofi2017_cale",
     "cube_filosofi2017_cale",
-    "cubestrat_filosofi2017_caleidf5",
-    "cubestrat_filosofi2017_caleidf9",
-    "cubestrat_filosofi2017_caleegal5",
-    "cubestrat_filosofi2017_caleegal9"
+    "cubestrat_filosofi2017_cale"
   )
   
   res_resultat <- res %>%

@@ -7,12 +7,13 @@ tirage_cube <- function(bdd_sondage,
                         strate_var = NULL,
                         comment_cube = FALSE) {
 
+  # bdd_sondage <- base_sondage
   # nb_bv_tires <- 600
   # nb_bulletins_tires <- 100
   # poids_cales <- TRUE
-  # stratifie <- TRUE
+  # stratifie <- FALSE
   # tour <- "T1"
-  # strate_var <- "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8"
+  # strate_var <- "CLUSTER_AFM_DENSITE_FILOSOFI_2017_8"
   # comment_cube <- TRUE
   
   bdd_cube <- as.data.frame(bdd_sondage)
@@ -61,6 +62,5 @@ tirage_cube <- function(bdd_sondage,
                           indic_d1 = ech,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales,
-                          strate_var = strate_var))
+                          poids_cales = poids_cales))
 }

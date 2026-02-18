@@ -1,6 +1,5 @@
 tirage_bulletins <- function(bdd_sondage, indic_d1, tour,
-                             nb_max_bulletins_tires, poids_cales,
-                             strate_var = NULL){
+                             nb_max_bulletins_tires, poids_cales){
   
   ech_bv <- getdata(bdd_sondage, indic_d1)
   
@@ -30,8 +29,7 @@ tirage_bulletins <- function(bdd_sondage, indic_d1, tour,
   
   if (poids_cales) {
     ech_bulletins$poids <- calage(
-      ech_bulletins, ech_bulletins$poids,
-      strate_var
+      ech_bulletins, ech_bulletins$poids
       )
   }
 

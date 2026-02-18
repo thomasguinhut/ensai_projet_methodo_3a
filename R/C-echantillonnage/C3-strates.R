@@ -60,7 +60,6 @@ tirage_stratifie <- function(bdd_sondage,
                           indic_d1 = vecteur,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales,
-                          strate_var = strate_var))
+                          poids_cales = poids_cales))
 
 }

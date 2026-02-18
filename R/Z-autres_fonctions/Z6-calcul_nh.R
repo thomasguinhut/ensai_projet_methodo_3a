@@ -1,7 +1,7 @@
 calcul_nh <- function(bdd_sondage,
                       nb_bv_tires,
                       return_pik,
-                      strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_8",
+                      strate_var,
                       type_strat = NULL) {
   
   # nb_bv_tires <- 600
@@ -122,7 +122,6 @@ calcul_nh <- function(bdd_sondage,
   
   # Retourner les probabilités d'inclusion si demandé
   if (return_pik) {
-    # print(Nh)
     # Joindre les allocations à la base de sondage
     base_avec_alloc <- bdd_sondage %>%
       left_join(Nh %>% 

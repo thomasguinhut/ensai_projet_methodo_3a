@@ -140,13 +140,32 @@ bv_2022_final_6 <- bv_2022_final_5 %>%
     by = "ID"
   ) %>%
   mutate(
+    # Pourcentages T1
     across(
-      ends_with("2017_T1"),
-      ~ round((.x / INSCRITS_2017_T1) * 100, 1), 
+      ends_with("_2017_T1"),
+      ~ round((.x / INSCRITS_2017_T1) * 100, 1),
       .names = "PROP_{.col}"
     ),
-    NX_BV = if_any(ends_with("_2017_T1") | ends_with("_2017_T2"), is.na)) %>% 
-  dplyr::select(-c("PROP_INSCRITS_2017_T1", "PROP_VOTANTS_2017_T1"))
+    # Pourcentages T2
+    across(
+      ends_with("_2017_T2"),
+      ~ round((.x / INSCRITS_2017_T2) * 100, 1),
+      .names = "PROP_{.col}"
+    ),
+    # indicateur données manquantes
+    NX_BV = if_any(
+      ends_with("_2017_T1") | ends_with("_2017_T2"),
+      is.na
+    )
+  ) %>%
+  dplyr::select(
+    -c(
+      "PROP_INSCRITS_2017_T1",
+      "PROP_VOTANTS_2017_T1",
+      "PROP_INSCRITS_2017_T2",
+      "PROP_VOTANTS_2017_T2"
+    )
+  )
 
 glimpse(bv_2022_final_6)
 

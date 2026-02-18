@@ -47,7 +47,8 @@ ech_simple_cale <- tirage_simple(bdd_sondage = base_sondage,
                                  nb_bv_tires = 600,
                                  nb_max_bulletins_tires = 100,
                                  poids_cales = TRUE,
-                                 tour = "T1")
+                                 tour = "T1",
+                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_5")
 estimation_flash(ech_simple_t1, "MACRON", "T1")
 estimation_flash(ech_simple_t1, "LEPEN", "T1")
 estimation_flash(ech_simple_t1, "MELENCHON", "T1")
@@ -56,10 +57,10 @@ ech_stratfilosofi2017_cale <- tirage_stratifie(
   bdd_sondage = base_sondage,
   nb_bv_tires = 600,
   nb_max_bulletins_tires = 100,
-  type_strat = "idf",
+  type_strat = NULL,
   annee2017 = TRUE,
   filosofi = TRUE,
-  nb_clusters = "5",
+  nb_clusters = "3",
   poids_cales = TRUE,
   tour = "T1")
 estimation_flash(ech_stratfilosofi2017_cale, "MACRON", "T1")
@@ -87,13 +88,13 @@ estimation_flash(ech_cube_cale, "MELENCHON", "T1")
 
 ech_cubestrat_caleegal9 <- tirage_cube(
   bdd_sondage = base_sondage,
-  nb_bv_tires = 1000,
-  nb_max_bulletins_tires = 200,
+  nb_bv_tires = 600,
+  nb_max_bulletins_tires = 100,
   type_strat = "idf",
   poids_cales = TRUE,
   stratifie = TRUE,
   tour = "T1",
-  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_9",
+  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
   comment_cube = FALSE)
 estimation_flash(ech_cubestrat_caleegal9, "MACRON", "T1")
 estimation_flash(ech_cubestrat_caleegal9, "LEPEN", "T1")
@@ -137,10 +138,8 @@ res <- lapply(X = 1:nb_sim, FUN = function(i){
                                    stratfilosofi_cale = TRUE,
                                    stratfilosofi2017_cale = TRUE,
                                    cube_filosofi2017_cale= TRUE,
-                                   cubestrat_filosofi2017_caleidf5 = TRUE,
-                                   cubestrat_filosofi2017_caleidf9 = TRUE,
-                                   cubestrat_filosofi2017_caleegal5 = TRUE,
-                                   cubestrat_filosofi2017_caleegal9 = TRUE,
+                                   cubestrat_filosofi2017_cale3 = TRUE,
+                                   cubestrat_filosofi2017_cale8 = TRUE,
                                    candidats = c("MACRON", "LEPEN", "MELENCHON"))
   resultats$simulation <- i
   
@@ -158,6 +157,6 @@ aws.s3::s3write_using(
 
 duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
 cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
-cat("Résultats sauvegardés :", "resultats_simulations_MC_600_100.rds", "\n")
+cat("Résultats sauvegardés :", "resultats_simulations_MC_1000_100.rds", "\n")
 
 plot_resultats(res_final)

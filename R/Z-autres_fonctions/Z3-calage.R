@@ -1,10 +1,5 @@
 calage <- function(ech, poids, strate_var = NULL) {
   
-  # Si strate_var n'est pas fourni, utiliser la variable par défaut
-  if (is.null(strate_var)) {
-    strate_var <- "CLUSTER_AFM_REG_DENSITE_FILOSOFI_8"
-  }
-  
   # Identifier les valeurs uniques du cluster
   valeurs_cluster <- bv_2022_final %>% 
     filter(!is.na(.data[[strate_var]])) %>% 

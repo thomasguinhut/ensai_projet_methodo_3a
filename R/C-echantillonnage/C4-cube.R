@@ -1,7 +1,6 @@
 tirage_cube <- function(bdd_sondage,
                         nb_bv_tires,
                         nb_max_bulletins_tires,
-                        type_strat = NULL,
                         poids_cales,
                         stratifie = FALSE,
                         tour = "T1",
@@ -19,7 +18,6 @@ tirage_cube <- function(bdd_sondage,
   bdd_cube <- as.data.frame(bdd_sondage)
   
   x <- bdd_cube %>% 
-    arrange(.data[[strate_var]]) %>% 
     dplyr::select(
       "ID", "TIRABLE",
       ends_with("2017_T1"),
@@ -44,11 +42,9 @@ tirage_cube <- function(bdd_sondage,
   row.names(x) <- x$ID
   x$ID <- NULL
   
-  PI <- calcul_nh(bdd_sondage = bdd_sondage,
-                  nb_bv_tires = nb_bv_tires,
-                  return_pik = TRUE,
-                  type_strat = type_strat,
-                  strate_var = strate_var)
+  n <- nb_bv_tires
+  N <- nrow(bdd_sondage)
+  PI <- rep(n/N, N)
   
   bdd_sondage$proba_d1 <- PI
   X <- cbind(PI, as.matrix(x))

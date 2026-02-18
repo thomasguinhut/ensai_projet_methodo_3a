@@ -31,7 +31,7 @@ bdd_facto <- bv_2022_final_7 %>%
     starts_with("DENS3_P"),
     starts_with(c("PROP_IND", "PROP_MEN", "PROP_LOG", "MOY")),
     -c("IND", "MEN", "LOG"),
-    starts_with("PROP") & ends_with("2017_T1")
+    starts_with("PROP") & ends_with(c("2017_T1", "2017_T2"))
   ) %>% 
   as.data.frame()
 
@@ -64,11 +64,11 @@ plot_variances_dimensions(res.mfa_densite_filosofi)
 fviz_mfa_axes(res.mfa_densite_filosofi,
               repel = TRUE,
               axes = c(1, 2),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 fviz_mfa_axes(res.mfa_densite_filosofi,
               repel = TRUE,
               axes = c(1, 3),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 
 fviz_mfa_var(res.mfa_densite_filosofi, "quanti.var", palette = "jco",
              col.var.sup = "violet", repel = TRUE, axes = c(1, 2))
@@ -93,10 +93,11 @@ colnames(bdd_facto)
 
 res.mfa_densite_filosofi_2017 <- MFA(
   bdd_facto,
-  group = c(3, 20, 12),
-  type = rep("s", 3),
+  group = c(3, 20, 12, 3),
+  type = rep("s", 4),
   ncp = 15,
-  name.group = c("Grille densité", "Filosofi", "Présidentielle 2017"),
+  name.group = c("Grille densité", "Filosofi", "Présidentielle 2017 T1",
+                 "Présidentielle 2017 T2"),
   graph = FALSE
 )
 
@@ -105,11 +106,11 @@ plot_variances_dimensions(res.mfa_densite_filosofi_2017)
 fviz_mfa_axes(res.mfa_densite_filosofi_2017,
               repel = TRUE,
               axes = c(1, 2),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 fviz_mfa_axes(res.mfa_densite_filosofi_2017,
               repel = TRUE,
               axes = c(1, 3),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 
 fviz_mfa_var(res.mfa_densite_filosofi_2017, "quanti.var", palette = "jco",
              col.var.sup = "violet", repel = TRUE, axes = c(1, 2))
@@ -135,11 +136,13 @@ plot(sort(c.mfa_densite_filosofi_2017$height, decreasing = TRUE)[1:20],
 colnames(bdd_facto)
 
 res.mfa_densite_2017 <- MFA(
-  bdd_facto %>% dplyr::select(starts_with("DENS3_P"), ends_with("2017_T1")),
-  group = c(3, 12),
-  type = rep("s", 2),
+  bdd_facto %>% dplyr::select(starts_with("DENS3_P"), ends_with(c("2017_T1",
+                                                                  "2017_T2"))),
+  group = c(3, 12, 3),
+  type = rep("s", 3),
   ncp = 10,
-  name.group = c("Grille densité", "Présidentielle 2017"),
+  name.group = c("Grille densité", "Présidentielle 2017 T1",
+                 "Présidentielle 2017 T2"),
   graph = FALSE
 )
 
@@ -148,11 +151,11 @@ plot_variances_dimensions(res.mfa_densite_2017)
 fviz_mfa_axes(res.mfa_densite_2017,
               repel = TRUE,
               axes = c(1, 2),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 fviz_mfa_axes(res.mfa_densite_2017,
               repel = TRUE,
               axes = c(1, 3),
-              palette = brewer.pal(4, "Set2")[2:4])
+              palette = brewer.pal(5, "Set2")[2:5])
 
 fviz_mfa_var(res.mfa_densite_2017, "quanti.var", palette = "jco",
              col.var.sup = "violet", repel = TRUE, axes = c(1, 2))
@@ -175,14 +178,9 @@ plot(sort(c.mfa_densite_2017$height, decreasing = TRUE)[1:20], type = "s",
 
 bdd_cluster_afm_densite_filosofi <- data.frame(
   CLUSTER_AFM_DENSITE_FILOSOFI_5 = cutree(c.mfa_densite_filosofi, 5))
-bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8 <- as.vector(
-  cutree(c.mfa_densite_filosofi, 8))
 
 bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_5 <- as.character(
   bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_5
-)
-bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8 <- as.character(
-  bdd_cluster_afm_densite_filosofi$CLUSTER_AFM_DENSITE_FILOSOFI_8
 )
 
 bdd_cluster_afm_densite_filosofi$ID <- row.names(
@@ -192,18 +190,18 @@ row.names(bdd_cluster_afm_densite_filosofi) <- NULL
 
 
 bdd_cluster_afm_densite_filosofi_2017 <- data.frame(
-  CLUSTER_AFM_DENSITE_FILOSOFI_2017_5 = cutree(c.mfa_densite_filosofi_2017, 5))
-bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9 <- (
-  as.vector(cutree(c.mfa_densite_filosofi_2017, 9))
+  CLUSTER_AFM_DENSITE_FILOSOFI_2017_3 = cutree(c.mfa_densite_filosofi_2017, 3))
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_8 <- (
+  as.vector(cutree(c.mfa_densite_filosofi_2017, 8))
 )
 
-bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_5 <- (
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_3 <- (
   as.character(
-    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_5
+    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_3
 ))
-bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9 <- (
+bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_8 <- (
   as.character(
-    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_9
+    bdd_cluster_afm_densite_filosofi_2017$CLUSTER_AFM_DENSITE_FILOSOFI_2017_8
   ))
 
 bdd_cluster_afm_densite_filosofi_2017$ID <- row.names(
@@ -214,17 +212,17 @@ row.names(bdd_cluster_afm_densite_filosofi_2017) <- NULL
 
 bdd_cluster_afm_densite_2017 <- data.frame(
   CLUSTER_AFM_DENSITE_2017_3 = cutree(c.mfa_densite_2017, 3))
-bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6 <- (
-  as.vector(cutree(c.mfa_densite_2017, 6))
+bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_8 <- (
+  as.vector(cutree(c.mfa_densite_2017, 8))
 )
 
 bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_3 <- (
   as.character(
     bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_3
   ))
-bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6 <- (
+bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_8 <- (
   as.character(
-    bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_6
+    bdd_cluster_afm_densite_2017$CLUSTER_AFM_DENSITE_2017_8
   ))
 
 bdd_cluster_afm_densite_2017$ID <- row.names(
@@ -236,16 +234,16 @@ row.names(bdd_cluster_afm_densite_2017) <- NULL
 bdd_cluster <- bdd_cluster_afm_densite_filosofi %>% 
   inner_join(bdd_cluster_afm_densite_filosofi_2017, by = "ID") %>% 
   dplyr::select(ID,
-                CLUSTER_AFM_DENSITE_FILOSOFI_5, CLUSTER_AFM_DENSITE_FILOSOFI_8,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017_5,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9) %>% 
+                CLUSTER_AFM_DENSITE_FILOSOFI_5,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_3,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_8) %>% 
   inner_join(bdd_cluster_afm_densite_2017, by = "ID") %>% 
   dplyr::select(ID,
-                CLUSTER_AFM_DENSITE_FILOSOFI_5, CLUSTER_AFM_DENSITE_FILOSOFI_8,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017_5,
-                CLUSTER_AFM_DENSITE_FILOSOFI_2017_9,
+                CLUSTER_AFM_DENSITE_FILOSOFI_5,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_3,
+                CLUSTER_AFM_DENSITE_FILOSOFI_2017_8,
                 CLUSTER_AFM_DENSITE_2017_3,
-                CLUSTER_AFM_DENSITE_2017_6)
+                CLUSTER_AFM_DENSITE_2017_8)
 
 bv_2022_final_8 <- bv_2022_final_7 %>% 
   left_join(bdd_cluster, by = "ID") %>% 

@@ -7,10 +7,8 @@ executer_tous_plans <- function(bdd_sondage,
                                 stratfilosofi_cale = TRUE,
                                 stratfilosofi2017_cale = TRUE,
                                 cube_filosofi2017_cale= TRUE,
-                                cubestrat_filosofi2017_caleidf5 = TRUE,
-                                cubestrat_filosofi2017_caleidf9 = TRUE,
-                                cubestrat_filosofi2017_caleegal5 = TRUE,
-                                cubestrat_filosofi2017_caleegal9 = TRUE,
+                                cubestrat_filosofi2017_cale3 = TRUE,
+                                cubestrat_filosofi2017_cale8 = TRUE,
                                 candidats = c("MACRON", "LEPEN", "MELENCHON")) {
   
   resultats <- list()
@@ -39,7 +37,7 @@ executer_tous_plans <- function(bdd_sondage,
     ech_simple_cale <- tirage_simple(bdd_sondage = bdd_sondage,
                                      nb_bv_tires = nb_bv_tires,
                                      nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                     strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_5",
+                                     strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_5",
                                      poids_cales = TRUE,
                                      tour = tour)
     for (candidat in candidats) {
@@ -58,7 +56,7 @@ executer_tous_plans <- function(bdd_sondage,
     ech_stratfilosofi_cale <- tirage_stratifie(bdd_sondage = bdd_sondage,
                                                nb_bv_tires = nb_bv_tires,
                                                nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                               type_strat = "idf",
+                                               type_strat = "egal",
                                                annee2017 = FALSE,
                                                filosofi = TRUE,
                                                nb_clusters = "5",
@@ -80,10 +78,10 @@ executer_tous_plans <- function(bdd_sondage,
     ech_stratfilosofi2017_cale <- tirage_stratifie(bdd_sondage = bdd_sondage,
                                                    nb_bv_tires = nb_bv_tires,
                                                    nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                                   type_strat = "idf",
+                                                   type_strat = "egal",
                                                    annee2017 = TRUE,
                                                    filosofi = TRUE,
-                                                   nb_clusters = "5",
+                                                   nb_clusters = "3",
                                                    poids_cales = TRUE,
                                                    tour = tour)
     for (candidat in candidats) {
@@ -105,7 +103,7 @@ executer_tous_plans <- function(bdd_sondage,
                                  poids_cales = TRUE,
                                  stratifie = FALSE,
                                  tour = tour,
-                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_5",
+                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_2017_3",
                                  comment_cube = FALSE)
     for (candidat in candidats) {
       estimation <- estimation_brute(ech_cube_cale, candidat)
@@ -118,88 +116,42 @@ executer_tous_plans <- function(bdd_sondage,
   }
   
   # 6. Tirage cube stratifié idf avec calage sur 5 clusters filosofi x 2017
-  if (cubestrat_filosofi2017_caleidf5) {
+  if (cubestrat_filosofi2017_cale3) {
     
-    ech_cubestrat_caleidf5 <- tirage_cube(bdd_sondage = bdd_sondage,
+    ech_cubestrat_cale5 <- tirage_cube(bdd_sondage = bdd_sondage,
                                  nb_bv_tires = nb_bv_tires,
                                  nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                 type_strat = "idf",
                                  poids_cales = TRUE,
                                  stratifie = TRUE,
                                  tour = tour,
-                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_5",
+                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_2017_3",
                                  comment_cube = FALSE)
     for (candidat in candidats) {
-      estimation <- estimation_brute(ech_cubestrat_caleidf5, candidat)
+      estimation <- estimation_brute(ech_cubestrat_cale5, candidat)
       resultats[[length(resultats) + 1]] <- data.frame(
         candidat = candidat,
-        methode = "cubestrat_filosofi2017_caleidf5",
+        methode = "cubestrat_filosofi2017_cale3",
         estimation = estimation
       )
     }
   }
   
   # 7. Tirage cube stratifié idf avec calage sur 9 clusters filosofi x 2017
-  if (cubestrat_filosofi2017_caleidf9) {
+  if (cubestrat_filosofi2017_cale8) {
     
-    ech_cubestrat_caleidf9 <- tirage_cube(bdd_sondage = bdd_sondage,
+    ech_cubestrat_cale9 <- tirage_cube(bdd_sondage = bdd_sondage,
                                  nb_bv_tires = nb_bv_tires,
                                  nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                 type_strat = "idf",
                                  poids_cales = TRUE,
                                  stratifie = TRUE,
                                  tour = tour,
-                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_9",
+                                 strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_2017_8",
                                  comment_cube = FALSE)
     for (candidat in candidats) {
-      estimation <- estimation_brute(ech_cubestrat_caleidf9, candidat)
+      estimation <- estimation_brute(ech_cubestrat_cale9, candidat)
       resultats[[length(resultats) + 1]] <- data.frame(
         candidat = candidat,
-        methode = "cubestrat_filosofi2017_caleidf9",
-        estimation = estimation
-      )
-    }
-  }
-  
-  # 8. Tirage cube stratifié egal avec calage sur 5 clusters filosofi x 2017
-  if (cubestrat_filosofi2017_caleegal5) {
-    
-    ech_cubestrat_caleegal5 <- tirage_cube(bdd_sondage = bdd_sondage,
-                                 nb_bv_tires = nb_bv_tires,
-                                 nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                 type_strat = "egal",
-                                 poids_cales = TRUE,
-                                 stratifie = TRUE,
-                                 tour = tour,
-                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_5",
-                                 comment_cube = FALSE)
-    for (candidat in candidats) {
-      estimation <- estimation_brute(ech_cubestrat_caleegal5, candidat)
-      resultats[[length(resultats) + 1]] <- data.frame(
-        candidat = candidat,
-        methode = "cubestrat_filosofi2017_caleegal5",
-        estimation = estimation
-      )
-    }
-  }
-  
-  # 9. Tirage cube stratifié egal avec calage sur 9 clusters filosofi x 2017
-  if (cubestrat_filosofi2017_caleegal9) {
-    
-    ech_cubestrat_caleegal9 <- tirage_cube(bdd_sondage = bdd_sondage,
-                                 nb_bv_tires = nb_bv_tires,
-                                 nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                 type_strat = "egal",
-                                 poids_cales = TRUE,
-                                 stratifie = TRUE,
-                                 tour = tour,
-                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_9",
-                                 comment_cube = FALSE)
-    for (candidat in candidats) {
-      estimation <- estimation_brute(ech_cubestrat_caleegal9, candidat)
-      resultats[[length(resultats) + 1]] <- data.frame(
-        candidat = candidat,
-        methode = "cubestrat_filosofi2017_caleegal9",
+        methode = "cubestrat_filosofi2017_cale8",
         estimation = estimation
       )
     }

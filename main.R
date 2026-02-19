@@ -101,7 +101,7 @@ ech_cube_cale <- tirage_cube(
   stratifie = FALSE,
   tour = "T1",
   comment_cube = TRUE,
-  method_calage = "raking")
+  method_calage = "linear")
 estimation_flash(ech_cube_cale, "MACRON", "T1")
 estimation_flash(ech_cube_cale, "LEPEN", "T1")
 estimation_flash(ech_cube_cale, "MELENCHON", "T1")
@@ -113,26 +113,21 @@ ech_cubestrat_cale_linear <- tirage_cube(
   poids_cales = TRUE,
   stratifie = TRUE,
   tour = "T1",
-  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
+  strate_var = "REG_DENS3",
   comment_cube = TRUE,
   method_calage = "linear")
 estimation_flash(ech_cubestrat_cale_linear, "MACRON", "T1")
 estimation_flash(ech_cubestrat_cale_linear, "LEPEN", "T1")
 estimation_flash(ech_cubestrat_cale_linear, "MELENCHON", "T1")
-
-ech_cubestrat_cale_raking <- tirage_cube(
-  bdd_sondage = base_sondage,
-  nb_bv_tires = 600,
-  nb_max_bulletins_tires = 100,
-  poids_cales = TRUE,
-  stratifie = TRUE,
-  tour = "T1",
-  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
-  comment_cube = TRUE,
-  method_calage = "raking")
-estimation_flash(ech_cubestrat_cale_raking, "MACRON", "T1")
-estimation_flash(ech_cubestrat_cale_raking, "LEPEN", "T1")
-estimation_flash(ech_cubestrat_cale_raking, "MELENCHON", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "ZEMMOUR", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "HIDALGO", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "PECRESSE", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "JADOT", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "DUPONTAIGNAN", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "POUTOU", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "ARTHAUD", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "ROUSSEL", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "LASSALLE", "T1")
 
 
 
@@ -141,7 +136,7 @@ estimation_flash(ech_cubestrat_cale_raking, "MELENCHON", "T1")
 ################################################################################
 
 
-nb_sim <- 20
+nb_sim <- 50
 nb_bv_tires <- 600
 nb_max_bulletins_tires <- 100
 duree_estimee <- nb_sim * 1.6
@@ -177,13 +172,13 @@ res_final <- Reduce(f = rbind, x = res)
 aws.s3::s3write_using(
   res_final,
   FUN = function(data, file) saveRDS(data, file = file),
-  object = "resultats_simulations_MC_600_100.rds",
+  object = "resultats_simulations_MC_600_200_2.rds",
   bucket = "projet-ensai-methodo-3a",
   opts = list(region = "")
 )
 
 duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
 cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
-cat("Résultats sauvegardés :", "resultats_simulations_MC_600_100.rds", "\n")
+cat("Résultats sauvegardés :", "resultats_simulations_MC_600_200_2.rds", "\n")
 
 plot_resultats(res_final, lang = "eng")

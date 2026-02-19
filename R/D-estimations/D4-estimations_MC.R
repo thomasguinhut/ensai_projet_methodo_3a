@@ -130,7 +130,7 @@ executer_tous_plans <- function(bdd_sondage,
                                  poids_cales = TRUE,
                                  stratifie = TRUE,
                                  tour = tour,
-                                 strate_var = "REG",
+                                 strate_var = "ANCIEN_REG",
                                  comment_cube = FALSE)
     for (candidat in candidats) {
       estimation <- estimation_brute(ech_cubestrat_cale, candidat)

@@ -113,7 +113,7 @@ ech_cubestrat_cale_linear <- tirage_cube(
   poids_cales = TRUE,
   stratifie = TRUE,
   tour = "T1",
-  strate_var = "REG_DENS3",
+  strate_var = "ANCIEN_REG",
   comment_cube = TRUE,
   method_calage = "linear")
 estimation_flash(ech_cubestrat_cale_linear, "MACRON", "T1")
@@ -136,10 +136,10 @@ estimation_flash(ech_cubestrat_cale_linear, "LASSALLE", "T1")
 ################################################################################
 
 
-nb_sim <- 50
+nb_sim <- 100
 nb_bv_tires <- 600
 nb_max_bulletins_tires <- 100
-duree_estimee <- nb_sim * 1.6
+duree_estimee <- nb_sim * 1.2
 cat("Durée estimée:",
     round(duree_estimee, 1),
     "minutes (~",

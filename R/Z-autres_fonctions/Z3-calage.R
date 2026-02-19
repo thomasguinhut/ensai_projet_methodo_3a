@@ -1,4 +1,5 @@
-calage <- function(ech, poids, type_calage = "poststrat", strate_var = NULL) {
+calage <- function(ech, poids, type_calage = "poststrat", strate_var = NULL,
+                   method_calage = "linear") {
   
   # strate_var <- "CLUSTER_AFM_DENSITE_FILOSOFI_6"
   # ech_bv <- ech_simple
@@ -89,9 +90,9 @@ calage <- function(ech, poids, type_calage = "poststrat", strate_var = NULL) {
     X <- X[ech$ID,]
     
   }
-
+  
   # Calibration
-  g_poids_lineaire <- calib(X, poids, totaux, method = "linear")
+  g_poids_lineaire <- calib(X, poids, totaux, method = method_calage)
   
   return(g_poids_lineaire * poids)
 }

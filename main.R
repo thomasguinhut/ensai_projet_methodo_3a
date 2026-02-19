@@ -8,7 +8,7 @@ packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
                      "stringr", "shiny", "FactoMineR", "factoextra", "stats", 
                      "lwgeom", "viridis", "RColorBrewer", "ggtext", "ggrepel",
                      "gtsummary", "sampling", "fastcluster", "tidyverse",
-                     "purrr")
+                     "purrr", "tibble")
 
 if (!"pacman" %in% installed.packages()) {
   install.packages("pacman")
@@ -100,12 +100,13 @@ ech_cube_cale <- tirage_cube(
   poids_cales = TRUE,
   stratifie = FALSE,
   tour = "T1",
-  comment_cube = TRUE)
+  comment_cube = TRUE,
+  method_calage = "raking")
 estimation_flash(ech_cube_cale, "MACRON", "T1")
 estimation_flash(ech_cube_cale, "LEPEN", "T1")
 estimation_flash(ech_cube_cale, "MELENCHON", "T1")
 
-ech_cubestrat_cale <- tirage_cube(
+ech_cubestrat_cale_linear <- tirage_cube(
   bdd_sondage = base_sondage,
   nb_bv_tires = 600,
   nb_max_bulletins_tires = 100,
@@ -113,10 +114,25 @@ ech_cubestrat_cale <- tirage_cube(
   stratifie = TRUE,
   tour = "T1",
   strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
-  comment_cube = TRUE)
-estimation_flash(ech_cubestrat_cale, "MACRON", "T1")
-estimation_flash(ech_cubestrat_cale, "LEPEN", "T1")
-estimation_flash(ech_cubestrat_cale, "MELENCHON", "T1")
+  comment_cube = TRUE,
+  method_calage = "linear")
+estimation_flash(ech_cubestrat_cale_linear, "MACRON", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "LEPEN", "T1")
+estimation_flash(ech_cubestrat_cale_linear, "MELENCHON", "T1")
+
+ech_cubestrat_cale_raking <- tirage_cube(
+  bdd_sondage = base_sondage,
+  nb_bv_tires = 600,
+  nb_max_bulletins_tires = 100,
+  poids_cales = TRUE,
+  stratifie = TRUE,
+  tour = "T1",
+  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
+  comment_cube = TRUE,
+  method_calage = "raking")
+estimation_flash(ech_cubestrat_cale_raking, "MACRON", "T1")
+estimation_flash(ech_cubestrat_cale_raking, "LEPEN", "T1")
+estimation_flash(ech_cubestrat_cale_raking, "MELENCHON", "T1")
 
 
 
@@ -125,10 +141,10 @@ estimation_flash(ech_cubestrat_cale, "MELENCHON", "T1")
 ################################################################################
 
 
-nb_sim <- 10
+nb_sim <- 20
 nb_bv_tires <- 600
 nb_max_bulletins_tires <- 100
-duree_estimee <- nb_sim * 3
+duree_estimee <- nb_sim * 1.6
 cat("Durée estimée:",
     round(duree_estimee, 1),
     "minutes (~",
@@ -145,11 +161,11 @@ res <- lapply(X = 1:nb_sim, FUN = function(i){
                                    nb_bv_tires = nb_bv_tires,
                                    nb_max_bulletins_tires = nb_max_bulletins_tires,
                                    tour = "T1",
-                                   simple = FALSE,
-                                   simple_cale = FALSE,
-                                   stratfilosofi_cale = FALSE,
-                                   stratfilosofi2017_cale = FALSE,
-                                   cube_filosofi2017_cale= FALSE,
+                                   simple = TRUE,
+                                   simple_cale = TRUE,
+                                   stratfilosofi_cale = TRUE,
+                                   stratfilosofi2017_cale = TRUE,
+                                   cube_filosofi2017_cale= TRUE,
                                    cubestrat_filosofi2017_cale = TRUE,
                                    candidats = c("MACRON", "LEPEN", "MELENCHON"))
   resultats$simulation <- i
@@ -170,4 +186,4 @@ duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
 cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
 cat("Résultats sauvegardés :", "resultats_simulations_MC_600_100.rds", "\n")
 
-plot_resultats(res_final)
+plot_resultats(res_final, lang = "eng")

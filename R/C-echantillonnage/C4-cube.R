@@ -2,6 +2,7 @@ tirage_cube <- function(bdd_sondage,
                         nb_bv_tires,
                         nb_max_bulletins_tires,
                         poids_cales,
+                        method_calage,
                         stratifie = FALSE,
                         tour = "T1",
                         strate_var = NULL,
@@ -64,5 +65,6 @@ tirage_cube <- function(bdd_sondage,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
                           poids_cales = poids_cales,
-                          type_calage = "marges"))
+                          type_calage = "marges",
+                          method_calage = method_calage))
 }

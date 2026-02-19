@@ -1,14 +1,16 @@
 tirage_bulletins <- function(bdd_sondage, indic_d1, tour,
                              nb_max_bulletins_tires, poids_cales, type_calage,
-                             strate_var = NULL){
+                             strate_var = NULL, method_calage = "linear"){
   
   ech_bv <- getdata(bdd_sondage, indic_d1)
 
   if (poids_cales) {
     ech_bv$proba_d1_cale <- 1 / calage(
       ech = ech_bv, poids = (1 / ech_bv$proba_d1),
-      type_calage = type_calage, strate_var = strate_var
+      type_calage = type_calage, strate_var = strate_var,
+      method_calage = method_calage
     )
+
   }
 
   bds_individus <- creer_base_bulletins(ech_bv, tour)

@@ -132,7 +132,7 @@ bv_2022_3 <- bv_2022_final_6 %>%
   )
 
 bv_2022_4 <- bv_2022_3 %>% 
-  filter(EXPRIMES_T1 != 0 & EXPRIMES_T2 != 0)
+  filter(EXPRIMES_T1 != 0 & EXPRIMES_T2 != 0 & EXPRIMES_2017_T1 != 0 & EXPRIMES_2017_T2 != 0)
 
 
 

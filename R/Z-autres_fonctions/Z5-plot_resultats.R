@@ -1,9 +1,35 @@
-plot_resultats <- function(res) {
+plot_resultats <- function(res, lang = "fr") {
   
-  library(dplyr)
-  library(ggplot2)
-  library(ggrepel)
-  library(tibble)
+  # -----------------------------
+  # Gestion de la langue
+  # -----------------------------
+  if (lang == "eng") {
+    txt <- list(
+      title = paste0(
+        "Distribution of estimates (",
+        "Monte Carlo simulations with ", nb_sim,
+        " draws of at most ", nb_max_bulletins_tires,
+        " ballots in ", nb_bv_tires, " polling stations)"
+      ),
+      subtitle = "Solid lines: true values | Dotted lines: polling institutes estimates at 8pm",
+      x = "\nSampling design",
+      y = "Estimate (%)\n",
+      fill = ""
+    )
+  } else {
+    txt <- list(
+      title = paste0(
+        "Distribution des estimations (",
+        "simulations Monte-Carlo avec ", nb_sim,
+        " tirages de maximum ", nb_max_bulletins_tires,
+        " bulletins dans ", nb_bv_tires, " bureaux de vote)"
+      ),
+      subtitle = "Traits pleins : valeurs réelles | Pointillés : estimations des instituts à 20h",
+      x = "\nPlan de sondage",
+      y = "Estimation (%)\n",
+      fill = ""
+    )
+  }
   
   # -----------------------------
   # Mise en forme des méthodes
@@ -21,7 +47,7 @@ plot_resultats <- function(res) {
     mutate(methode = factor(methode, levels = niveaux_methodes))
   
   # -----------------------------
-  # Fonds alternés (sans légende)
+  # Fonds alternés
   # -----------------------------
   fond_methodes <- tibble(
     xmin = seq_along(niveaux_methodes) - 0.5,
@@ -62,46 +88,30 @@ plot_resultats <- function(res) {
   # -----------------------------
   ggplot() +
     
-    # Fonds alternés discrets
     geom_rect(
       data = fond_methodes,
-      aes(
-        xmin = xmin,
-        xmax = xmax,
-        ymin = -Inf,
-        ymax = Inf
-      ),
+      aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
       inherit.aes = FALSE,
       fill = "grey70",
       alpha = 0.04
     ) +
     
-    # Boxplots par 3
     geom_boxplot(
       data = res_resultat,
-      aes(
-        x = methode,
-        y = estimation,
-        fill = candidat
-      ),
-      position = position_dodge2(
-        width = 0.8,
-        padding = 0.35
-      ),
+      aes(x = methode, y = estimation, fill = candidat),
+      position = position_dodge2(width = 0.8, padding = 0.35),
       width = 0.6,
       alpha = 0.9,
       linewidth = 0.5,
       outlier.shape = NA
     ) +
     
-    # Valeurs réelles
     geom_hline(
       data = valeurs_reelles,
       aes(yintercept = valeur, color = candidat),
       linewidth = 1.1
     ) +
     
-    # Instituts (pointillés)
     geom_hline(
       data = sondages_instituts,
       aes(yintercept = valeur, color = candidat),
@@ -110,7 +120,6 @@ plot_resultats <- function(res) {
       alpha = 0.7
     ) +
     
-    # Labels instituts (plus à droite)
     geom_text_repel(
       data = sondages_instituts,
       aes(
@@ -127,7 +136,6 @@ plot_resultats <- function(res) {
       show.legend = FALSE
     ) +
     
-    # Couleurs
     scale_fill_manual(
       values = c(
         "LEPEN" = "#E76F51",
@@ -144,7 +152,6 @@ plot_resultats <- function(res) {
       guide = "none"
     ) +
     
-    # Axes
     scale_y_continuous(
       breaks = seq(18, 30, by = 1),
       minor_breaks = NULL
@@ -153,50 +160,26 @@ plot_resultats <- function(res) {
       expand = expansion(add = c(0.6, 1.4))
     ) +
     
-    # Titres
     labs(
-      title = paste0(
-        "Distribution des estimations (",
-        "simulations Monte-Carlo avec ", nb_sim,
-        " tirages de maximum ", nb_max_bulletins_tires,
-        " bulletins dans ", nb_bv_tires, " bureaux de vote)"
-      ),
-      subtitle = "Traits pleins : valeurs réelles | Pointillés : estimations des instituts à 20h",
-      x = "\nPlan de sondage",
-      y = "Estimation (%)\n",
-      fill = ""
+      title = txt$title,
+      subtitle = txt$subtitle,
+      x = txt$x,
+      y = txt$y,
+      fill = txt$fill
     ) +
     
     coord_cartesian(clip = "off") +
     
-    # Thème
     theme_minimal(base_size = 11) +
     theme(
       legend.position = "bottom",
-      
       panel.grid.major.x = element_blank(),
       panel.grid.minor = element_blank(),
       panel.grid.major.y = element_line(color = "grey85", linewidth = 0.4),
-      
-      axis.text.x = element_text(
-        angle = 30,
-        hjust = 1,
-        size = 9
-      ),
-      
+      axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
       axis.title = element_text(face = "bold"),
-      
-      plot.title = element_text(
-        face = "bold",
-        size = 13,
-        margin = margin(b = 6)
-      ),
-      plot.subtitle = element_text(
-        size = 10,
-        color = "grey30",
-        margin = margin(b = 10)
-      ),
-      
+      plot.title = element_text(face = "bold", size = 13, margin = margin(b = 6)),
+      plot.subtitle = element_text(size = 10, color = "grey30", margin = margin(b = 10)),
       plot.margin = margin(10, 10, 10, 10)
     )
 }

@@ -2,28 +2,29 @@ tirage_stratifie <- function(bdd_sondage,
                              nb_bv_tires,
                              nb_max_bulletins_tires,
                              type_strat,
-                             annee2017,
+                             prez2017,
                              filosofi,
                              nb_clusters,
                              poids_cales,
+                             type_calage,
                              tour = "T1") {
   
   # bdd_sondage <- base_sondage
   # nb_bv_tires <- 500
   # nb_max_bulletins_tires <- 100
-  # type_strat <- "egal"
-  # annee2017 <- TRUE
+  # type_strat <- NULL
+  # prez2017 <- TRUE
   # filosofi <- TRUE
-  # nb_clusters <- 9
+  # nb_clusters <- 8
   # poids_cales <- TRUE
   # tour <- "T1"
   
-  strate_var <- if (annee2017 & filosofi) {
-    paste0("CLUSTER_AFM_REG_DENSITE_FILOSOFI_2017_", nb_clusters)
-  } else if (!annee2017 & filosofi) {
-    paste0("CLUSTER_AFM_REG_DENSITE_FILOSOFI_", nb_clusters)
-  } else if (annee2017 & !filosofi) {
-    paste0("CLUSTER_AFM_REG_DENSITE_2017_", nb_clusters)
+  strate_var <- if (prez2017 & filosofi) {
+    paste0("CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_", nb_clusters)
+  } else if (!prez2017 & filosofi) {
+    paste0("CLUSTER_AFM_IDF_DENSITE_FILOSOFI_", nb_clusters)
+  } else if (prez2017 & !filosofi) {
+    paste0("CLUSTER_AFM_IDF_DENSITE_2017_", nb_clusters)
   }
   
   bdd_sondage_inter <- bdd_sondage[order(bdd_sondage[[strate_var]]), ]
@@ -60,6 +61,8 @@ tirage_stratifie <- function(bdd_sondage,
                           indic_d1 = vecteur,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales))
+                          poids_cales = poids_cales,
+                          strate_var = strate_var,
+                          type_calage = type_calage))
 
 }

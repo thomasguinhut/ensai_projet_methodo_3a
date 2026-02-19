@@ -56,30 +56,42 @@ ech_simple_cale <- tirage_simple(bdd_sondage = base_sondage,
                                  nb_bv_tires = 600,
                                  nb_max_bulletins_tires = 100,
                                  poids_cales = TRUE,
+                                 strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
+                                 type_calage = "poststrat",
                                  tour = "T1")
 estimation_flash(ech_simple_cale, "MACRON", "T1")
 estimation_flash(ech_simple_cale, "LEPEN", "T1")
 estimation_flash(ech_simple_cale, "MELENCHON", "T1")
+
+ech_stratfilosofi_cale <- tirage_stratifie(
+  bdd_sondage = base_sondage,
+  nb_bv_tires = 600,
+  nb_max_bulletins_tires = 100,
+  type_strat = NULL,
+  prez2017 = FALSE,
+  filosofi = TRUE,
+  nb_clusters = "8",
+  poids_cales = TRUE,
+  type_calage = "poststrat",
+  tour = "T1")
+estimation_flash(ech_stratfilosofi_cale, "MACRON", "T1")
+estimation_flash(ech_stratfilosofi_cale, "LEPEN", "T1")
+estimation_flash(ech_stratfilosofi_cale, "MELENCHON", "T1")
 
 ech_stratfilosofi2017_cale <- tirage_stratifie(
   bdd_sondage = base_sondage,
   nb_bv_tires = 600,
   nb_max_bulletins_tires = 100,
   type_strat = NULL,
-  annee2017 = TRUE,
+  prez2017 = TRUE,
   filosofi = TRUE,
-  nb_clusters = "3",
+  nb_clusters = "8",
   poids_cales = TRUE,
+  type_calage = "poststrat",
   tour = "T1")
 estimation_flash(ech_stratfilosofi2017_cale, "MACRON", "T1")
 estimation_flash(ech_stratfilosofi2017_cale, "LEPEN", "T1")
 estimation_flash(ech_stratfilosofi2017_cale, "MELENCHON", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "ZEMMOUR", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "JADOT", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "PECRESSE", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "LASSALLE", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "ROUSSEL", "T1")
-estimation_flash(ech_stratfilosofi2017_cale, "HIDALGO", "T1")
 
 ech_cube_cale <- tirage_cube(
   bdd_sondage = base_sondage,
@@ -88,8 +100,7 @@ ech_cube_cale <- tirage_cube(
   poids_cales = TRUE,
   stratifie = FALSE,
   tour = "T1",
-  strate_var = "CLUSTER_AFM_REG_DENSITE_FILOSOFI_2017_3",
-  comment_cube = FALSE)
+  comment_cube = TRUE)
 estimation_flash(ech_cube_cale, "MACRON", "T1")
 estimation_flash(ech_cube_cale, "LEPEN", "T1")
 estimation_flash(ech_cube_cale, "MELENCHON", "T1")
@@ -101,7 +112,7 @@ ech_cubestrat_cale <- tirage_cube(
   poids_cales = TRUE,
   stratifie = TRUE,
   tour = "T1",
-  strate_var = "CLUSTER_AFM_DENSITE_FILOSOFI_2017_3",
+  strate_var = "CLUSTER_AFM_IDF_DENSITE_FILOSOFI_2017_8",
   comment_cube = TRUE)
 estimation_flash(ech_cubestrat_cale, "MACRON", "T1")
 estimation_flash(ech_cubestrat_cale, "LEPEN", "T1")

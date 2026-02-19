@@ -21,7 +21,7 @@ tirage_cube <- function(bdd_sondage,
   x <- bdd_cube %>% 
     dplyr::select(
       "ID", "TIRABLE",
-      ends_with("2017_T1"),
+      ends_with(c("2017_T1")),
       "DENS3",
       starts_with(c("IND", "MEN", "LOG")), 
       -c("IND", "MEN", "LOG"),
@@ -33,7 +33,8 @@ tirage_cube <- function(bdd_sondage,
       URBAIN_DENSE = ifelse(DENS3 == "1", 1, 0)
     ) %>% 
     dplyr::select(ID, TIRABLE, INSCRITS_2017_T1, EXPRIMES_2017_T1, MACRON_2017_T1,
-                  LEPEN_2017_T1, FILLON_2017_T1, MELENCHON_2017_T1, HAMON_2017_T1,
+                  LEPEN_2017_T1, FILLON_2017_T1,
+                  MELENCHON_2017_T1, HAMON_2017_T1,
                   DUPONTAIGNAN_2017_T1, LASSALLE_2017_T1, POUTOU_2017_T1,
                   ASSELINEAU_2017_T1, ARTHAUD_2017_T1, CHEMINADE_2017_T1,
                   RURAL, URBAIN_INTERM, URBAIN_DENSE, starts_with("MEN"), "LOG_SOC",
@@ -62,5 +63,6 @@ tirage_cube <- function(bdd_sondage,
                           indic_d1 = ech,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales))
+                          poids_cales = poids_cales,
+                          type_calage = "marges"))
 }

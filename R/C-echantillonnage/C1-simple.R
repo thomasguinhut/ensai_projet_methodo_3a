@@ -2,9 +2,11 @@ tirage_simple <- function(bdd_sondage,
                           nb_bv_tires,
                           nb_max_bulletins_tires,
                           poids_cales,
+                          strate_var = NULL,
+                          type_calage = NULL,
                           tour = "T1") {
   
-  # nb_bv_tires <- 500
+  # nb_bv_tires <- 600
   # nb_bulletins_tires <- 100
   # tour <- "T1"
   
@@ -20,6 +22,8 @@ tirage_simple <- function(bdd_sondage,
                           indic_d1 = vecteur,
                           tour = tour,
                           nb_max_bulletins_tires = nb_max_bulletins_tires,
-                          poids_cales = poids_cales))
+                          poids_cales = poids_cales,
+                          strate_var = strate_var,
+                          type_calage = type_calage))
   
 }

@@ -8,7 +8,7 @@ packages_requis <- c("dplyr", "aws.s3", "readxl", "arrow", "readr", "ggplot2",
                      "stringr", "shiny", "FactoMineR", "factoextra", "stats", 
                      "lwgeom", "viridis", "RColorBrewer", "ggtext", "ggrepel",
                      "gtsummary", "sampling", "fastcluster", "tidyverse",
-                     "purrr", "tibble")
+                     "purrr", "tibble", "httr")
 
 if (!"pacman" %in% installed.packages()) {
   install.packages("pacman")
@@ -95,7 +95,7 @@ estimation_flash(ech_stratfilosofi2017_cale, "MELENCHON", "T1")
 
 ech_cube_cale <- tirage_cube(
   bdd_sondage = base_sondage,
-  nb_bv_tires = 600,
+  nb_bv_tires = 300,
   nb_max_bulletins_tires = 100,
   poids_cales = TRUE,
   stratifie = FALSE,
@@ -106,7 +106,7 @@ estimation_flash(ech_cube_cale, "MACRON", "T1")
 estimation_flash(ech_cube_cale, "LEPEN", "T1")
 estimation_flash(ech_cube_cale, "MELENCHON", "T1")
 
-ech_cubestrat_cale_linear <- tirage_cube(
+ech_cubestrat_cale <- tirage_cube(
   bdd_sondage = base_sondage,
   nb_bv_tires = 600,
   nb_max_bulletins_tires = 100,
@@ -116,18 +116,20 @@ ech_cubestrat_cale_linear <- tirage_cube(
   strate_var = "ANCIEN_REG",
   comment_cube = TRUE,
   method_calage = "linear")
-estimation_flash(ech_cubestrat_cale_linear, "MACRON", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "LEPEN", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "MELENCHON", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "ZEMMOUR", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "HIDALGO", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "PECRESSE", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "JADOT", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "DUPONTAIGNAN", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "POUTOU", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "ARTHAUD", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "ROUSSEL", "T1")
-estimation_flash(ech_cubestrat_cale_linear, "LASSALLE", "T1")
+estimation_flash(ech_cubestrat_cale, "MACRON", "T1")
+estimation_flash(ech_cubestrat_cale, "LEPEN", "T1")
+estimation_flash(ech_cubestrat_cale, "MELENCHON", "T1")
+estimation_flash(ech_cubestrat_cale, "ZEMMOUR", "T1")
+estimation_flash(ech_cubestrat_cale, "HIDALGO", "T1")
+estimation_flash(ech_cubestrat_cale, "PECRESSE", "T1")
+estimation_flash(ech_cubestrat_cale, "JADOT", "T1")
+estimation_flash(ech_cubestrat_cale, "DUPONTAIGNAN", "T1")
+estimation_flash(ech_cubestrat_cale, "POUTOU", "T1")
+estimation_flash(ech_cubestrat_cale, "ARTHAUD", "T1")
+estimation_flash(ech_cubestrat_cale, "ROUSSEL", "T1")
+estimation_flash(ech_cubestrat_cale, "LASSALLE", "T1")
+
+localisation_bv_tires(ech_cubestrat_cale_linear)
 
 
 
@@ -136,49 +138,21 @@ estimation_flash(ech_cubestrat_cale_linear, "LASSALLE", "T1")
 ################################################################################
 
 
-nb_sim <- 100
-nb_bv_tires <- 600
-nb_max_bulletins_tires <- 100
-duree_estimee <- nb_sim * 1.2
-cat("Durée estimée:",
-    round(duree_estimee, 1),
-    "minutes (~",
-    round(duree_estimee/60, 1),
-    "heures)\n\n")
-
-debut_total <- Sys.time()
-cat("Début des simulations :", nb_sim, "itérations\n")
-
-res <- lapply(X = 1:nb_sim, FUN = function(i){
-  cat("Simulation", i, "/", nb_sim, "\n")
-  
-  resultats <- executer_tous_plans(bdd_sondage = base_sondage,
-                                   nb_bv_tires = nb_bv_tires,
-                                   nb_max_bulletins_tires = nb_max_bulletins_tires,
-                                   tour = "T1",
-                                   simple = TRUE,
-                                   simple_cale = TRUE,
-                                   stratfilosofi_cale = TRUE,
-                                   stratfilosofi2017_cale = TRUE,
-                                   cube_filosofi2017_cale= TRUE,
-                                   cubestrat_filosofi2017_cale = TRUE,
-                                   candidats = c("MACRON", "LEPEN", "MELENCHON"))
-  resultats$simulation <- i
-  
-  return(resultats)
-})
-
-res_final <- Reduce(f = rbind, x = res)
-aws.s3::s3write_using(
-  res_final,
-  FUN = function(data, file) saveRDS(data, file = file),
-  object = "resultats_simulations_MC_600_200_2.rds",
-  bucket = "projet-ensai-methodo-3a",
-  opts = list(region = "")
+res_sim <- run_simulations_mc(
+  nb_sim                      = 100,
+  nb_bv_tires                 = 600,
+  nb_max_bulletins_tires      = 100,
+  tour                        = "T1",
+  candidats                   = c("MACRON", "LEPEN", "MELENCHON"),
+  simple                      = TRUE,
+  simple_cale                 = TRUE,
+  stratfilosofi_cale          = TRUE,
+  stratfilosofi2017_cale      = TRUE,
+  cube_filosofi2017_cale      = TRUE,
+  cubestrat_filosofi2017_cale = TRUE,
+  bdd_sondage                 = base_sondage,
+  s3_bucket                   = "projet-ensai-methodo-3a",
+  s3_object                   = NULL
 )
 
-duree_totale <- difftime(Sys.time(), debut_total, units = "mins")
-cat("\nTerminé en", round(duree_totale, 1), "minutes\n")
-cat("Résultats sauvegardés :", "resultats_simulations_MC_600_200_2.rds", "\n")
-
-plot_resultats(res_final, lang = "eng")
+plot_resultats(res_sim, lang = "eng")

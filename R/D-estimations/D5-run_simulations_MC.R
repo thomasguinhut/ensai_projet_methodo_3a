@@ -1,4 +1,4 @@
-run_simulations_mc <- function(
+run_simulations_MC <- function(
     nb_sim                    = 100,
     nb_bv_tires               = 600,
     nb_max_bulletins_tires    = 100,

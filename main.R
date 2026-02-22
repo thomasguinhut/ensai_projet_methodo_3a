@@ -138,8 +138,8 @@ localisation_bv_tires(ech_cubestrat_cale_linear)
 ################################################################################
 
 
-res_sim <- run_simulations_mc(
-  nb_sim                      = 100,
+res_sim <- run_simulations_MC(
+  nb_sim                      = 1000,
   nb_bv_tires                 = 600,
   nb_max_bulletins_tires      = 100,
   tour                        = "T1",

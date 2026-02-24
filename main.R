@@ -155,4 +155,8 @@ res_sim <- run_simulations_MC(
   s3_object                   = NULL
 )
 
-plot_resultats(res_sim, lang = "eng")
+plot_resultats(res_sim,
+               nb_sim = 1000,
+               nb_bv_tires = 600,
+               nb_max_bulletins_tires = 100,
+               lang = "eng")

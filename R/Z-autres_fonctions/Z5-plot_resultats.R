@@ -1,4 +1,8 @@
-plot_resultats <- function(res, lang = "fr") {
+plot_resultats <- function(res,
+                           nb_sim,
+                           nb_bv_tires,
+                           nb_max_bulletins_tires,
+                           lang = "fr") {
   
   # -----------------------------
   # Gestion de la langue

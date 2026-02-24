@@ -15,7 +15,7 @@ run_simulations_MC <- function(
     s3_object                 = NULL
 ) {
   
-  duree_estimee <- nb_sim * 1.2
+  duree_estimee <- nb_sim * 3
   cat("Durée estimée :", round(duree_estimee, 1), "minutes (~",
       round(duree_estimee / 60, 1), "heures)\n\n")
   

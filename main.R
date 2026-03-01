@@ -140,7 +140,7 @@ localisation_bv_tires(ech_cubestrat_cale_linear)
 
 res_sim <- run_simulations_MC(
   nb_sim                      = 1000,
-  nb_bv_tires                 = 600,
+  nb_bv_tires                 = 300,
   nb_max_bulletins_tires      = 100,
   tour                        = "T1",
   candidats                   = c("MACRON", "LEPEN", "MELENCHON"),
@@ -157,6 +157,6 @@ res_sim <- run_simulations_MC(
 
 plot_resultats(res_sim,
                nb_sim = 1000,
-               nb_bv_tires = 600,
+               nb_bv_tires = 300,
                nb_max_bulletins_tires = 100,
                lang = "eng")

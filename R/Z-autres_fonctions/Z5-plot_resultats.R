@@ -12,13 +12,18 @@ plot_resultats <- function(res,
       title = paste0(
         "Distribution of estimates (",
         "Monte Carlo simulations with ", nb_sim,
-        " draws of at most ", nb_max_bulletins_tires,
+        " draws\n of at most ", nb_max_bulletins_tires,
         " ballots in ", nb_bv_tires, " polling stations)"
       ),
-      subtitle = "Solid lines: true values | Dotted lines: polling institutes estimates at 8pm",
+      subtitle = paste0(
+        "Solid lines: true values | ",
+        "Long dashes (--): sampling frame values | \n",
+        "Medium dashes (- -): metropolitan France results | ",
+        "Dotted lines: polling institutes estimates at 8pm"
+      ),
       x = "\nSampling design",
       y = "Estimate (%)\n",
-      fill = ""
+      fill = "Candidate"
     )
   } else {
     txt <- list(
@@ -28,10 +33,15 @@ plot_resultats <- function(res,
         " tirages de maximum ", nb_max_bulletins_tires,
         " bulletins dans ", nb_bv_tires, " bureaux de vote)"
       ),
-      subtitle = "Traits pleins : valeurs réelles | Pointillés : estimations des instituts à 20h",
+      subtitle = paste0(
+        "Traits pleins : valeurs réelles | ",
+        "Longs tirets (--) : valeurs base de sondage | ",
+        "Tirets moyens (- -) : résultats France métropolitaine | ",
+        "Pointillés : estimations des instituts à 20h"
+      ),
       x = "\nPlan de sondage",
       y = "Estimation (%)\n",
-      fill = ""
+      fill = "Candidat"
     )
   }
   
@@ -51,16 +61,7 @@ plot_resultats <- function(res,
     mutate(methode = factor(methode, levels = niveaux_methodes))
   
   # -----------------------------
-  # Fonds alternés
-  # -----------------------------
-  fond_methodes <- tibble(
-    xmin = seq_along(niveaux_methodes) - 0.5,
-    xmax = seq_along(niveaux_methodes) + 0.5,
-    fond = rep(c(TRUE, FALSE), length.out = length(niveaux_methodes))
-  )
-  
-  # -----------------------------
-  # Valeurs réelles
+  # Valeurs réelles (résultats officiels)
   # -----------------------------
   valeurs_reelles <- tibble(
     candidat = c("MACRON", "LEPEN", "MELENCHON"),
@@ -68,7 +69,30 @@ plot_resultats <- function(res,
       valeur_reelle(NULL, "MACRON", "T1"),
       valeur_reelle(NULL, "LEPEN", "T1"),
       valeur_reelle(NULL, "MELENCHON", "T1")
-    )
+    ),
+    type_ligne = "Valeurs réelles"
+  )
+  
+  # -----------------------------
+  # Valeurs de la base de sondage
+  # -----------------------------
+  valeurs_base_sondage <- tibble(
+    candidat = c("MACRON", "LEPEN", "MELENCHON"),
+    valeur = c(
+      valeur_reelle_base_sondage(NULL, "MACRON", "T1"),
+      valeur_reelle_base_sondage(NULL, "LEPEN", "T1"),
+      valeur_reelle_base_sondage(NULL, "MELENCHON", "T1")
+    ),
+    type_ligne = "Base de sondage"
+  )
+  
+  # -----------------------------
+  # Résultats France métropolitaine
+  # -----------------------------
+  valeurs_france_metro <- tibble(
+    candidat    = c("MACRON", "LEPEN", "MELENCHON"),
+    valeur      = c(27.77, 23.46, 21.51),
+    type_ligne  = "France métropolitaine"
   )
   
   # -----------------------------
@@ -88,18 +112,21 @@ plot_resultats <- function(res,
   )
   
   # -----------------------------
+  # Palette de couleurs
+  # -----------------------------
+  palette_couleurs <- c(
+    "LEPEN"     = "#E76F51",
+    "MACRON"    = "#2A9D8F",
+    "MELENCHON" = "#457B9D"
+  )
+  
+  
+  # -----------------------------
   # Graphique
   # -----------------------------
   ggplot() +
     
-    geom_rect(
-      data = fond_methodes,
-      aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
-      inherit.aes = FALSE,
-      fill = "grey70",
-      alpha = 0.04
-    ) +
-    
+    # Boîtes à moustaches
     geom_boxplot(
       data = res_resultat,
       aes(x = methode, y = estimation, fill = candidat),
@@ -110,12 +137,33 @@ plot_resultats <- function(res,
       outlier.shape = NA
     ) +
     
+    # Valeurs réelles (traits pleins)
     geom_hline(
       data = valeurs_reelles,
       aes(yintercept = valeur, color = candidat),
+      linetype = "solid",
       linewidth = 1.1
     ) +
     
+    # Valeurs base de sondage (longs tirets)
+    geom_hline(
+      data = valeurs_base_sondage,
+      aes(yintercept = valeur, color = candidat),
+      linetype = "longdash",
+      linewidth = 0.9,
+      alpha = 0.85
+    ) +
+    
+    # Résultats France métropolitaine (tirets moyens)
+    geom_hline(
+      data = valeurs_france_metro,
+      aes(yintercept = valeur, color = candidat),
+      linetype = "dashed",
+      linewidth = 0.9,
+      alpha = 0.85
+    ) +
+    
+    # Estimations instituts (pointillés)
     geom_hline(
       data = sondages_instituts,
       aes(yintercept = valeur, color = candidat),
@@ -124,6 +172,7 @@ plot_resultats <- function(res,
       alpha = 0.7
     ) +
     
+    # Étiquettes instituts
     geom_text_repel(
       data = sondages_instituts,
       aes(
@@ -140,19 +189,14 @@ plot_resultats <- function(res,
       show.legend = FALSE
     ) +
     
-    scale_fill_manual(
-      values = c(
-        "LEPEN" = "#E76F51",
-        "MACRON" = "#2A9D8F",
-        "MELENCHON" = "#457B9D"
-      )
-    ) +
+    # -----------------------------
+  # Échelles
+  # -----------------------------
+  scale_fill_manual(
+    values = palette_couleurs
+  ) +
     scale_color_manual(
-      values = c(
-        "LEPEN" = "#E76F51",
-        "MACRON" = "#2A9D8F",
-        "MELENCHON" = "#457B9D"
-      ),
+      values = palette_couleurs,
       guide = "none"
     ) +
     
@@ -165,25 +209,28 @@ plot_resultats <- function(res,
     ) +
     
     labs(
-      title = txt$title,
+      title    = txt$title,
       subtitle = txt$subtitle,
-      x = txt$x,
-      y = txt$y,
-      fill = txt$fill
+      x        = txt$x,
+      y        = txt$y,
+      fill     = txt$fill
     ) +
     
     coord_cartesian(clip = "off") +
     
     theme_minimal(base_size = 11) +
     theme(
-      legend.position = "bottom",
+      legend.position   = "bottom",
+      legend.box        = "horizontal",
       panel.grid.major.x = element_blank(),
-      panel.grid.minor = element_blank(),
+      panel.grid.minor   = element_blank(),
+      panel.background   = element_blank(),
+      plot.background    = element_blank(),
       panel.grid.major.y = element_line(color = "grey85", linewidth = 0.4),
-      axis.text.x = element_text(angle = 30, hjust = 1, size = 9),
-      axis.title = element_text(face = "bold"),
-      plot.title = element_text(face = "bold", size = 13, margin = margin(b = 6)),
-      plot.subtitle = element_text(size = 10, color = "grey30", margin = margin(b = 10)),
-      plot.margin = margin(10, 10, 10, 10)
+      axis.text.x  = element_text(angle = 30, hjust = 1, size = 9),
+      axis.title   = element_text(face = "bold"),
+      plot.title   = element_text(face = "bold", size = 13, margin = margin(b = 6)),
+      plot.subtitle = element_text(size = 9, color = "grey30", margin = margin(b = 10)),
+      plot.margin  = margin(10, 10, 10, 10)
     )
 }
